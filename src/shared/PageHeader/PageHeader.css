@@ -1,0 +1,16 @@
+header{
+  background: #D6D6D6;
+  width: 100%;
+  position: absolute;
+}
+.header_row{
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  padding: 15px;
+}
+.header_title{
+  font-size: 20px;
+  font-weight: 400;
+  font-size: 30px;
+}
