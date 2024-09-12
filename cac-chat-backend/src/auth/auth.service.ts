@@ -51,4 +51,29 @@ export class AuthService {
 
         throw new UnauthorizedException({message: 'Некоректный email или пароль'})
     }
+
+    async auntitificate(jwtToken: string){
+        try{
+            this.jwtService.decode(jwtToken)
+        }catch{
+            throw new HttpException('Не получилось аунтитифицироваться', HttpStatus.BAD_REQUEST)
+        }
+
+        const decodeToken = this.jwtService.decode(jwtToken)
+
+
+        if(decodeToken){
+            const candidate = await this.usersService.getUser(this.jwtService.decode(jwtToken))
+
+            console.log(candidate)
+    
+            if(candidate){
+                return candidate
+            }else{
+                throw new HttpException('Не получилось аунтитифицироваться', HttpStatus.BAD_REQUEST)
+            }
+        }else{
+            throw new HttpException('Не получилось аунтитифицироваться', HttpStatus.BAD_REQUEST)
+        }
+    }
 }
