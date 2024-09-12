@@ -34,6 +34,7 @@
   font-size: 20px;
 }
 .form button{
+  cursor: pointer;
   border: 1px solid;
   padding: 12px;
   width: 30%;

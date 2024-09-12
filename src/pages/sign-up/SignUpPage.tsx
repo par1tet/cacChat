@@ -78,8 +78,8 @@ export default function SignUpPage({}: Props) {
       <PageHeader title={pageTitle} />
       <div className="sign_up_form form">
         <div className="form_title_block">
-          <p className="form_title">Create your account</p>
-          <a href="#">or Sign in</a>
+          <p className="form_title">Don't have an account? Sign up now.</p>
+          <a href="/sign_in">or Sign in</a>
         </div>
         <input type="email" name="email" value={userData.email} onChange={handleChange} placeholder="Email" />
         <input type="text" name="username" value={userData.username} onChange={handleChange} placeholder="Username" />

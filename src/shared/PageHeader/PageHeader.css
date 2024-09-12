@@ -1,7 +1,9 @@
 header{
   background: #D6D6D6;
   width: 100%;
-  position: absolute;
+  -webkit-box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
+  -moz-box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
+  box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
 }
 .header_row{
   display: flex;
@@ -10,7 +12,8 @@ header{
   padding: 15px;
 }
 .header_title{
-  font-size: 20px;
+  text-decoration: none;
+  color: black;
   font-weight: 400;
   font-size: 30px;
 }

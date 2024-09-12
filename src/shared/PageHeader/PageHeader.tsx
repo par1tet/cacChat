@@ -10,9 +10,9 @@ export default function PageHeader({title}: Props) {
     <header>
         <div className='container'>
           <div className="header_row">
-            <p className="header_title">
+            <a className="header_title" href='/'>
               {title}
-            </p>
+            </a>
           </div>
         </div>
       </header>

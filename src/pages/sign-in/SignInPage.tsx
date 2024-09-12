@@ -8,17 +8,13 @@ export default function SignInPage({}: Props) {
   const pageTitle = "Sign In";
 
   interface UserData {
-    username: string;
-    email: string;
+    userID: string;
     password: string;
-    passwordVerify: string;
   }
 
   const [userData, setUserData] = useState<UserData>({
-    email: "",
-    username: "",
+    userID: "",
     password: "",
-    passwordVerify: ""
   })
 
   const handleChange = (e: any) => {
@@ -30,25 +26,10 @@ export default function SignInPage({}: Props) {
   }
 
   const validateFields = (userData: UserData): boolean => {
-    const { username, email, password, passwordVerify } = userData;
+    const { userID, password } = userData;
   
-    if (!username.trim()) {
+    if (!userID.trim()) {
       console.log("Username is required.");
-      return false;
-    }
-  
-    if (!email.trim()) {
-      console.log("Email is required.");
-      return false;
-    }
-  
-    if (!isValidEmail(email)) {
-      console.log("Invalid email format.");
-      return false;
-    }
-  
-    if (password !== passwordVerify) {
-      console.log("Passwords do not match.");
       return false;
     }
   
@@ -58,11 +39,6 @@ export default function SignInPage({}: Props) {
     }
   
     return true;
-  };
-  
-  const isValidEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
   };
 
   const handleClick = (): void => {
@@ -74,17 +50,15 @@ export default function SignInPage({}: Props) {
   };
 
   return (
-    <div className="sign_up_wrapper">
+    <div className="sign_in_wrapper">
       <PageHeader title={pageTitle} />
-      <div className="sign_up_form form">
+      <div className="sign_in_form form">
         <div className="form_title_block">
-          <p className="form_title">Create your account</p>
-          <a href="#">or Sign in</a>
+          <p className="form_title">Welcome back! Please sign in.</p>
+          <a href="/sign_up">or Sign up</a>
         </div>
-        <input type="email" name="email" value={userData.email} onChange={handleChange} placeholder="Email" />
-        <input type="text" name="username" value={userData.username} onChange={handleChange} placeholder="Username" />
+        <input type="text" name="userID" value={userData.userID} onChange={handleChange} placeholder="Username" />
         <input type="password" name="password" value={userData.password} onChange={handleChange} placeholder="Password" />
-        <input type="password" name="passwordVerify" value={userData.passwordVerify} onChange={handleChange} placeholder="Password" />
         <button onClick={handleClick}>Enter</button>
         <a href="#">Google</a>
       </div>

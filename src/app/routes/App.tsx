@@ -1,6 +1,7 @@
 import './App.css';
 import SignUpPage from '../../pages/sign-up/SignUpPage';
 import SignInPage from '../../pages/sign-in/SignInPage';
+import ChatsPage from '../../pages/chats/ChatsPage';
 import TestPage from '../test-page/TestPage';
 import {
   createBrowserRouter,
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
       {
         path: "sign_in",
         element: <SignInPage />,
+      },
+      {
+        path: "chats",
+        element: <ChatsPage />,
       },
       {
         path: "",
