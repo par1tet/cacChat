@@ -23,11 +23,7 @@ export class UsersService {
         })
         console.log(foundUser)
         
-        if(foundUser) {
-            return foundUser
-        }else{
-            throw new HttpException('Not found', HttpStatus.NOT_FOUND)
-        }
+        return foundUser
     }
 
     async updateUser(dto: updateUserDto){
