@@ -83,13 +83,7 @@ export default function SignUpPage({}: Props) {
 				email: userData.email,
 				password: userData.password,
 			})
-			.then(r => console.log(r.data))
-
-			console.log({
-				nickname: userData.username,
-				email: userData.email,
-				password: userData.password,
-			})
+			.then(r => localStorage.setItem('token', r.data.token))
 
 		} else {
 			console.log("Validation failed.");

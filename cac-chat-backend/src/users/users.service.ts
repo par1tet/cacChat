@@ -6,6 +6,7 @@ import { getUserDto } from './dto/getUser.dto';
 import { updateUserDto } from './dto/updateUser.dto';
 import { where } from 'sequelize';
 import { deleteUserDto } from './dto/deleteUser.dto';
+import { getUserByNameAndPassword } from './dto/getUserByNameAndPassword.dto';
 
 @Injectable()
 export class UsersService {
@@ -49,5 +50,16 @@ export class UsersService {
                 email: dto.email
             }
         })
+    }
+
+    async getUserByNameAndPassword(dto: getUserByNameAndPassword){
+        const foundUser = await this.userRepository.findOne({
+            where: {
+                email: dto.email,
+                password: dto.password
+            }
+        })
+
+        return foundUser
     }
 }

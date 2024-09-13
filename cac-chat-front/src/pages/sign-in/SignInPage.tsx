@@ -3,17 +3,19 @@ import PageHeader from "../../shared/PageHeader/PageHeader";
 import cl from "./../../shared/css/Sign.module.css";
 import clsx from "clsx";
 import { Button } from "../../shared/UI-components/button/Button";
+import axios from "axios";
+import { serverLink } from "../../shared/api/serverLink";
 
 type Props = {};
 
 export default function SignInPage({}: Props) {
 	const pageTitle = "Sign In";
 	interface UserData {
-		userID: string;
+		email: string;
 		password: string;
 	}
 	const [userData, setUserData] = useState<UserData>({
-		userID: "",
+		email: "",
 		password: "",
 	})
 
@@ -33,10 +35,15 @@ export default function SignInPage({}: Props) {
 	}
 
 	const validateFields = (userData: UserData): boolean => {
-		const { userID, password } = userData;
+		const { email, password } = userData;
 
-		if (!userID.trim()) {
-			addError("Username is required.");
+		if (!email.trim()) {
+			addError("Email is required.")
+			return false;
+		}
+	
+		if (!isValidEmail(email)) {
+			addError("Invalid email format.")
 			return false;
 		}
 
@@ -48,9 +55,18 @@ export default function SignInPage({}: Props) {
 		return true;
 	};
 
-	const handleClick = (): void => {
+	const isValidEmail = (email: string) => {
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		return emailRegex.test(email);
+	};
+
+	const handleClick = async () => {
 		if (validateFields(userData)) {
-			console.log("Validation passed. Proceed with next steps.");
+			await axios.post(serverLink('auth/login'), {
+				email: userData.email,
+				password: userData.password,
+			})
+			.then(r => console.log(r.data))
 		}else{
 			console.log("Validation failed.");
 		}
@@ -64,7 +80,7 @@ export default function SignInPage({}: Props) {
 					<p className={cl["form_title"]}>Welcome back! Please sign in.</p>
 					<a href="/sign_up">or Sign up</a>
 				</div>
-				<input type="text" name="userID" value={userData.userID} onChange={handleChange} placeholder="Username" />
+				<input type="email" name="email" value={userData.email} onChange={handleChange} placeholder="Email"/>
 				<input type="password" name="password" value={userData.password} onChange={handleChange} placeholder="Password" />
 				<div className={cl['error']}>
 					<span ref={errorTextRef}></span>
