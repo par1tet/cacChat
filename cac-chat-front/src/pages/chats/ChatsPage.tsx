@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import PageHeader from "../../shared/PageHeader/PageHeader";
-import "./ChatsPage.css";
+import cl from "./ChatsPage.module.css";
 import mem from "/mem.png";
 import vite from "/vite.svg";
+import clsx from "clsx";
 type Props = {};
 
 export default function ChatsPage({}: Props) {
@@ -40,22 +41,22 @@ export default function ChatsPage({}: Props) {
   }, [chatList]);
 
   const mapChatList = chatList.map((element, index) => (
-    <div key={element.chatId} className="chat_block block">
-      <img className="img" src={element.img} />
-      <div className="block_column">
-        <p className="title">{element.title}</p>
-        <p className="last_message">{element.lastMessage}</p>
+    <div key={element.chatId} className={clsx(cl["chat_block"],cl["block"])}>
+      <img src={element.img} />
+      <div className={cl["block_column"]}>
+        <p className={cl["title"]}>{element.title}</p>
+        <p className={cl["last_message"]}>{element.lastMessage}</p>
       </div>
     </div>
   ));
 
   return (
-    <div className="chats_wrapper">
+    <div className={cl["chats_wrapper"]}>
       <PageHeader title={pageTitle} />
-      <div className="chats_container">
-        <div className="chats_content">{mapChatList}</div>
+      <div className={cl["chats_container"]}>
+        <div className={cl["chats_content"]}>{mapChatList}</div>
         {memViwe && (
-          <div className="mem">
+          <div className={cl["mem"]}>
             <img src={mem} alt="" />
             <p>Тут ничего нет выбирай <br /> и проваливай</p>
           </div>

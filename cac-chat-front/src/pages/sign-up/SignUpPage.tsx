@@ -1,6 +1,6 @@
 import { useState } from "react";
 import PageHeader from "../../shared/PageHeader/PageHeader";
-import "./SignUpPage.css";
+import cl from "./SignUpPage.module.css";
 
 type Props = {};
 
@@ -76,9 +76,9 @@ export default function SignUpPage({}: Props) {
   return (
     <div className="sign_up_wrapper">
       <PageHeader title={pageTitle} />
-      <div className="sign_up_form form">
-        <div className="form_title_block">
-          <p className="form_title">Don't have an account? Sign up now.</p>
+      <div className={cl["sign_up_form form"]}>
+        <div className={cl["form_title_block"]}>
+          <p className={cl["form_title"]}>Don't have an account? Sign up now.</p>
           <a href="/sign_in">or Sign in</a>
         </div>
         <input type="email" name="email" value={userData.email} onChange={handleChange} placeholder="Email" />

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import PageHeader from "../../shared/PageHeader/PageHeader";
-import "./SignInPage.css";
+import cl from "./SignInPage.module.css";
 
 type Props = {};
 
@@ -50,11 +50,11 @@ export default function SignInPage({}: Props) {
   };
 
   return (
-    <div className="sign_in_wrapper">
+    <div className={cl["sign_in_wrapper"]}>
       <PageHeader title={pageTitle} />
-      <div className="sign_in_form form">
-        <div className="form_title_block">
-          <p className="form_title">Welcome back! Please sign in.</p>
+      <div className={cl["sign_in_form form"]}>
+        <div className={cl["form_title_block"]}>
+          <p className={cl["form_title"]}>Welcome back! Please sign in.</p>
           <a href="/sign_up">or Sign up</a>
         </div>
         <input type="text" name="userID" value={userData.userID} onChange={handleChange} placeholder="Username" />
