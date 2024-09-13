@@ -1,56 +1,64 @@
 .sign_in_wrapper{
-  min-height: 100dvh;
-  min-width: 100dvw;
-  height: 100%;
-  width: 100%;
+	min-height: 100dvh;
+	min-width: 100dvw;
+	height: 100%;
+	width: 100%;
 }
 .sign_in_form{
-  max-width: 650px;
-  margin: 0 auto;
-  height: 100%;
-  min-height: 100dvh;
-  padding: 0 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
-  gap: 17px;
+	max-width: 650px;
+	margin: 0 auto;
+	height: 100%;
+	min-height: 100dvh;
+	padding: 0 10px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	text-align: center;
+	gap: 17px;
 }
 .form_title{
-  padding-bottom: 10px;
-  font-size: 20px;
-  color: black;
+	padding-bottom: 10px;
+	font-size: 20px;
+	color: black;
 }
 .form input{
-  text-align: center;
-  padding: 15px;
-  border-radius: 10px;
-  font-size: 20px;
-  border: 0;
-  background: #EFEFEF;
+	text-align: center;
+	padding: 15px;
+	border-radius: 10px;
+	font-size: 20px;
+	border: 0;
+	background: #EFEFEF;
 }
 .form input::placeholder{
-  color: black;
-  font-size: 20px;
+	color: black;
+	font-size: 20px;
 }
+
 .form button{
-  cursor: pointer;
-  border: 1px solid;
-  padding: 12px;
-  width: 30%;
-  margin: 0 auto;
-  background: #B0C5A9;
+	cursor: pointer;
+	border: 1px solid;
+	padding: 12px;
+	width: 30%;
+	margin: 0 auto;
+	background: #3cb813;
+	transition: 1s;
 }
+
+.form button:hover{
+	background: #69ff3c;
+	scale: 1.02;
+}
+
 .form_another_block{
-  display: flex;
-  flex-direction: column;
+	display: flex;
+	flex-direction: column;
 }
 .form a{
-  color: rgb(39, 60, 124);
-  font-size: 19px;
-  text-decoration: none;
+	color: rgb(39, 60, 124);
+	font-size: 19px;
+	text-decoration: none;
 }
 .form img{
-  max-width: 200px;
-  margin: 0 auto;
+	max-width: 200px;
+	margin: 0 auto;
 }

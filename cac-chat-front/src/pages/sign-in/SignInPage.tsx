@@ -1,68 +1,68 @@
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import PageHeader from "../../shared/PageHeader/PageHeader";
 import cl from "./SignInPage.module.css";
 import clsx from "clsx";
+import { Button } from "../../shared/UI-components/button/Button";
 
 type Props = {};
 
 export default function SignInPage({}: Props) {
-  const pageTitle = "Sign In";
+	const pageTitle = "Sign In";
+	interface UserData {
+		userID: string;
+		password: string;
+	}
+	const [userData, setUserData] = useState<UserData>({
+		userID: "",
+		password: "",
+	})
+	const handleChange = (e: any) => {
+		const {name, value} = e.target;
+		setUserData((prevData) => ({
+			...prevData,
+			[name]: value
+		}))
+	}
 
-  interface UserData {
-    userID: string;
-    password: string;
-  }
+	const validateFields = (userData: UserData): boolean => {
+		const { userID, password } = userData;
 
-  const [userData, setUserData] = useState<UserData>({
-    userID: "",
-    password: "",
-  })
+		if (!userID.trim()) {
+			console.log("Username is required.");
+			return false;
+		}
 
-  const handleChange = (e: any) => {
-    const {name, value} = e.target;
-    setUserData((prevData) => ({
-        ...prevData,
-        [name]: value
-    }))
-  }
+		if (password.length < 6) {
+			console.log("Password must be at least 6 characters long.");
+			return false;
+		}
 
-  const validateFields = (userData: UserData): boolean => {
-    const { userID, password } = userData;
-  
-    if (!userID.trim()) {
-      console.log("Username is required.");
-      return false;
-    }
-  
-    if (password.length < 6) {
-      console.log("Password must be at least 6 characters long.");
-      return false;
-    }
-  
-    return true;
-  };
+		return true;
+	};
 
-  const handleClick = (): void => {
-    if (validateFields(userData)) {
-      console.log("Validation passed. Proceed with next steps.");
-    } else {
-      console.log("Validation failed.");
-    }
-  };
+	const handleClick = (): void => {
+		if (validateFields(userData)) {
+			console.log("Validation passed. Proceed with next steps.");
+		}else{
+			console.log("Validation failed.");
+		}
+	};
 
-  return (
-    <div className={cl["sign_in_wrapper"]}>
-      <PageHeader title={pageTitle} />
-      <div className={clsx(cl["sign_in_form"],cl["form"])}>
-        <div className={cl["form_title_block"]}>
-          <p className={cl["form_title"]}>Welcome back! Please sign in.</p>
-          <a href="/sign_up">or Sign up</a>
-        </div>
-        <input type="text" name="userID" value={userData.userID} onChange={handleChange} placeholder="Username" />
-        <input type="password" name="password" value={userData.password} onChange={handleChange} placeholder="Password" />
-        <button onClick={handleClick}>Enter</button>
-        <a href="#">Google</a>
-      </div>
-    </div>
-  );
+	return (
+		<div className={cl["sign_in_wrapper"]}>
+			<PageHeader title={pageTitle} />
+			<div className={clsx(cl["sign_in_form"],cl["form"])}>
+				<div className={cl["form_title_block"]}>
+					<p className={cl["form_title"]}>Welcome back! Please sign in.</p>
+					<a href="/sign_up">or Sign up</a>
+				</div>
+				<input type="text" name="userID" value={userData.userID} onChange={handleChange} placeholder="Username" />
+				<input type="password" name="password" value={userData.password} onChange={handleChange} placeholder="Password" />
+					<Button width={200} height={40}>
+						Enter
+					</Button>
+				<a href="#">Google</a>
+			</div>
+		</div>
+	);
 }
