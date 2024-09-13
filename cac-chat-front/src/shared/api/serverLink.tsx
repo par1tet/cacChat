@@ -1,0 +1,1 @@
+export const serverLink = (path: string) => `http://localhost:4997/${path}`

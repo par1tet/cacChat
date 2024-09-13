@@ -26,10 +26,10 @@ export class AuthService {
 
         console.log(hashPassword)
 
-        return this.generateToken((await this.usersService.createUser({
+        return (this.generateToken((await this.usersService.createUser({
             ...dto,
             password: hashPassword
-        })))
+        }))))
     }
 
     async generateToken(user: User) {

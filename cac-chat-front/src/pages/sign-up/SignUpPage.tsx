@@ -3,6 +3,8 @@ import PageHeader from "../../shared/PageHeader/PageHeader";
 import cl from "./../../shared/css/Sign.module.css";
 import clsx from "clsx";
 import { Button } from "../../shared/UI-components/button/Button";
+import axios from 'axios'
+import { serverLink } from "../../shared/api/serverLink";
 
 type Props = {};
 
@@ -74,9 +76,21 @@ export default function SignUpPage({}: Props) {
 		return emailRegex.test(email);
 	};
 
-	const handleClick = (): void => {
+	const handleClick = async (): Promise<void> => {
 		if (validateFields(userData)) {
-			console.log("Validation passed. Proceed with next steps.");
+			await axios.post(serverLink('auth/registr'), {
+				nickname: userData.username,
+				email: userData.email,
+				password: userData.password,
+			})
+			.then(r => console.log(r.data))
+
+			console.log({
+				nickname: userData.username,
+				email: userData.email,
+				password: userData.password,
+			})
+
 		} else {
 			console.log("Validation failed.");
 		}
