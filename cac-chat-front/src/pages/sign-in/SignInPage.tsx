@@ -66,7 +66,7 @@ export default function SignInPage({}: Props) {
 				email: userData.email,
 				password: userData.password,
 			})
-			.then(r => console.log(r.data))
+			.then(r => localStorage.setItem('token', r.data.token))
 		}else{
 			console.log("Validation failed.");
 		}
