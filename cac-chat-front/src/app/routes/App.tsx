@@ -1,4 +1,4 @@
-import cl from './App.css';
+// import cl from './App.moudle.css';
 import SignUpPage from '../../pages/sign-up/SignUpPage';
 import SignInPage from '../../pages/sign-in/SignInPage';
 import ChatsPage from '../../pages/chats/ChatsPage';

@@ -40,7 +40,7 @@ export default function ChatsPage({}: Props) {
     }
   }, [chatList]);
 
-  const mapChatList = chatList.map((element, index) => (
+  const mapChatList = chatList.map((element) => (
     <div key={element.chatId} className={clsx(cl["chat_block"],cl["block"])}>
       <img src={element.img} />
       <div className={cl["block_column"]}>
