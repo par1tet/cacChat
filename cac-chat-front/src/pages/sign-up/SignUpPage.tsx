@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import PageHeader from "../../shared/PageHeader/PageHeader";
-import cl from "./SignUpPage.module.css";
+import cl from "./../../shared/css/Sign.module.css";
 import clsx from "clsx";
 import { Button } from "../../shared/UI-components/button/Button";
 
@@ -83,9 +83,9 @@ export default function SignUpPage({}: Props) {
 	};
 
 	return (
-		<div className={cl["sign_up_wrapper"]}>
+		<div className={cl["sign_wrapper"]}>
 			<PageHeader title={pageTitle} />
-			<div className={clsx(cl["sign_up_form"],cl["form"])}>
+			<div className={clsx(cl["sign_form"],cl["form"])}>
 				<div className={cl["form_title_block"]}>
 					<p className={cl["form_title"]}>Don't have an account? Sign up now.</p>
 					<a href="/sign_in">or Sign in</a>
