@@ -7,7 +7,7 @@ import { deleteUserDto } from './dto/deleteUser.dto';
 
 @Controller('users')
 export class UsersController {
-    constructor(private readonly usersService: UsersService) {}
+    constructor(private usersService: UsersService) {}
 
     @Get('get_users')
     getUsers(){
