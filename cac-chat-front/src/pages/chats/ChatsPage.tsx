@@ -75,6 +75,9 @@ export default function ChatsPage({}: Props) {
 						</div>
 					)}
 				</div>
+				<div className={cl['inputmessage']}>
+					<input type="text" placeholder="Enter message..."/>
+				</div>
 			</div>
 		</div>
 	);
