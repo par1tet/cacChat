@@ -1,4 +1,5 @@
-import { Column, Table, DataType, Model } from "sequelize-typescript";
+import { Column, Table, DataType, Model, BelongsTo } from "sequelize-typescript";
+import { Chat } from "src/chats/chats.model";
 
 interface UserCreateAttrs {
     email: string,
@@ -7,7 +8,7 @@ interface UserCreateAttrs {
 }
 
 @Table({tableName: 'users'})
-export class User extends Model<User> {
+export class User extends Model<User, UserCreateAttrs> {
     @Column({type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true})
     id: number;
 
