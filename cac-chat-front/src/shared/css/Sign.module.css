@@ -1,9 +1,3 @@
-.sign_wrapper{
-	min-height: 100dvh;
-	min-width: 100dvw;
-	height: 100%;
-	width: 100%;
-}
 .sign_form{
 	max-width: 650px;
 	margin: 0 auto;
@@ -27,25 +21,28 @@
 	border-radius: 10px;
 	font-size: 20px;
 	border: 0;
-	background: #EFEFEF;
 }
+
 .form input::placeholder{
-	color: black;
+	color: rgba(119, 119, 119, 0.904);
 	font-size: 20px;
 }
+
 .form button{
 	cursor: pointer;
-	border: 1px solid;
+	border: 0px;
 	padding: 12px;
 	width: 30%;
 	margin: 0 auto;
-	background: #3cb813;
-	transition: 1s;
+	background-color: var(--fiol-color);
+
+    font-weight: 800;
+
+	transition: 300ms;
 }
 
 .form button:hover{
-	background: #69ff3c;
-	scale: 1.02;
+	scale: 1.1;
 }
 
 .form_another_block{
@@ -53,9 +50,8 @@
 	flex-direction: column;
 }
 .form a{
-	color: rgb(39, 60, 124);
+	color: rgb(255, 255, 255);
 	font-size: 19px;
-	text-decoration: none;
 }
 .form img{
 	max-width: 200px;

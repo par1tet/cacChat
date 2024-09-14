@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import PageHeader from "../../shared/PageHeader/PageHeader";
 import cl from "./ChatsPage.module.css";
 import mem from "/mem.png";
 import vite from "/vite.svg";
@@ -9,7 +8,6 @@ type Props = {};
 
 export default function ChatsPage({}: Props) {
 	const navigate = useNavigate()
-	const pageTitle = "Chats";
 	const [memViwe, setMemView] = useState(true);
 
 	const chatList = [
@@ -58,7 +56,6 @@ export default function ChatsPage({}: Props) {
 
 	return (
 		<div className={cl["chats_wrapper"]}>
-			<PageHeader title={pageTitle} />
 			<div className={cl["chats_container"]}>
 				<div className={cl["chats_content"]}>{mapChatList}</div>
 				{memViwe && (

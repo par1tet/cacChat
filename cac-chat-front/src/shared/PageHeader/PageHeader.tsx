@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom"
 import cl from "./PageHeader.module.css"
 
 type Props = {
@@ -9,9 +10,9 @@ export default function PageHeader({title}: Props) {
     <header>
         <div className={cl['container']}>
           <div className={cl["header_row"]}>
-            <a className={cl["header_title"]} href='/'>
+            <Link className={cl["header_title"]} to='/'>
               {title}
-            </a>
+            </Link>
           </div>
         </div>
       </header>

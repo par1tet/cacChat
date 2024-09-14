@@ -77,23 +77,19 @@ export default function SignInPage({}: Props) {
 	};
 
 	return (
-		<div className={cl["sign_wrapper"]}>
-			<PageHeader title={pageTitle} />
-			<div className={clsx(cl["sign_form"],cl["form"])}>
-				<div className={cl["form_title_block"]}>
-					<p className={cl["form_title"]}>Welcome back! Please sign in.</p>
-					<Link to="/sign_up">or Sign up</Link>
-				</div>
-				<input type="email" name="email" value={userData.email} onChange={handleChange} placeholder="Email"/>
-				<input type="password" name="password" value={userData.password} onChange={handleChange} placeholder="Password" />
-				<div className={cl['error']}>
-					<span ref={errorTextRef}></span>
-				</div>
-				<Button width={200} height={40} onClick={handleClick}>
-					Enter
-				</Button>
-				<a href="#">Google</a>
+		<div className={clsx(cl["sign_form"],cl["form"])}>
+			<div className={cl["form_title_block"]}>
+				<p className={cl["form_title"]}>Welcome back! Please sign in.</p>
+				<Link to="/sign_up">or Sign up</Link>
 			</div>
+			<input type="email" name="email" value={userData.email} onChange={handleChange} placeholder="Email"/>
+			<input type="password" name="password" value={userData.password} onChange={handleChange} placeholder="Password" />
+			<div className={cl['error']}>
+				<span ref={errorTextRef}></span>
+			</div>
+			<Button width={200} height={40} onClick={handleClick}>
+				Enter
+			</Button>
 		</div>
 	);
 }
