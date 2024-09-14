@@ -4,7 +4,6 @@ import ChatsPage from '../../pages/chats/ChatsPage.tsx';
 import SignInPage from '../../pages/sign-in/SignInPage.tsx';
 import SignUpPage from '../../pages/sign-up/SignUpPage.tsx';
 import MainPage from '../test-page/MainPage.tsx';
-import PageHeader from "../../shared/PageHeader/PageHeader.tsx";
 
 function App() {
 	return (

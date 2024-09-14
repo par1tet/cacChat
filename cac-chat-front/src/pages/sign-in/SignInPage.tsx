@@ -1,5 +1,4 @@
-import { ChangeEvent, useRef, useState } from "react";
-import PageHeader from "../../shared/PageHeader/PageHeader";
+import { useRef, useState } from "react";
 import cl from "./../../shared/css/Sign.module.css";
 import clsx from "clsx";
 import { Button } from "../../shared/UI-components/button/Button";
@@ -11,7 +10,6 @@ type Props = {};
 
 export default function SignInPage({}: Props) {
 	const navigate = useNavigate()
-	const pageTitle = "Sign In";
 	interface UserData {
 		email: string;
 		password: string;

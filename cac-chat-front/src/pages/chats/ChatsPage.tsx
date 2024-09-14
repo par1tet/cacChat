@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import cl from "./ChatsPage.module.css";
-import mem from "/mem.png";
 import vite from "/vite.svg";
 import clsx from "clsx";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +7,6 @@ type Props = {};
 
 export default function ChatsPage({}: Props) {
 	const navigate = useNavigate()
-	const [memViwe, setMemView] = useState(true);
 
 	const chatList = [
 		{
@@ -31,39 +29,52 @@ export default function ChatsPage({}: Props) {
 		}
 	];
 
+	const messageList = [
+		{
+			content: "hello",
+			type: 'me',
+		},
+		{
+			content: "how are u",
+			type: 'me',
+		},
+		{
+			content: "hi",
+			type: 'another',
+		},
+		{
+			content: "okay, are u?",
+			type: 'another',
+		},
+	];
+
 	useEffect(() => {
-		if(localStorage.getItem('token')){
-			if (chatList.length > 5) {
-				setMemView(false);
-			}
-			if (chatList.length <= 5) {
-				setMemView(true);
-			}
-		}else{
+		if(!localStorage.getItem('token')){
 			navigate('/')
 		}
 	}, [chatList]);
 
-	const mapChatList = chatList.map((element) => (
-		<div key={element.chatId} className={clsx(cl["chat_block"],cl["block"])}>
-			<img src={element.img} />
-			<div className={cl["block_column"]}>
-				<p className={cl["title"]}>{element.title}</p>
-				<p className={cl["last_message"]}>{element.lastMessage}</p>
-			</div>
-		</div>
-	));
-
 	return (
-		<div className={cl["chats_wrapper"]}>
-			<div className={cl["chats_container"]}>
-				<div className={cl["chats_content"]}>{mapChatList}</div>
-				{memViwe && (
-					<div className={cl["mem"]}>
-						<img src={mem} alt="" />
-						<p>Тут ничего нет выбирай <br /> и проваливай</p>
+		<div className={cl["chatscontent"]}>
+			<div className={cl["chatscontent__chats"]}>{
+				chatList.map(element =>
+					<div key={element.chatId} className={clsx(cl["chat_block"],cl["block"])}>
+						<img src={element.img} />
+						<div className={cl["infocolumn"]}>
+							<p className={cl["title"]}>{element.title}</p>
+							<p className={cl["lastmessage"]}>{element.lastMessage}</p>
+						</div>
 					</div>
-				)}
+				)
+			}</div>
+			<div className={cl["chatscontent__chatmessages"]}>
+				<div className={cl['messages']}>
+					{messageList.map(message =>
+						<div className={cl[`messagewrapper`]}>
+							<span className={clsx(cl[`message`], cl[`message-${message.type}`])}>{message.content}</span>
+						</div>
+					)}
+				</div>
 			</div>
 		</div>
 	);
