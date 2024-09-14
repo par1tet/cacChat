@@ -1,24 +1,23 @@
-import { useState } from "react"
+import { useEffect } from "react"
 import cl from "./TestPage.module.css"
+import { Link, useNavigate } from "react-router-dom"
 
 type Props = {}
 
 export default function TestPage({}: Props) {
-	const [token] = useState(localStorage.getItem('token'))
+	const navigate = useNavigate()
 
-	console.log(localStorage.getItem('token'))
+	useEffect(() => {
+		if(localStorage.getItem('token')){
+			navigate('/chats')
+		}
+	}, [])
 	
-	if(token){
+	if(!localStorage.getItem('token')){
 		return (
 			<ul className={cl['test_page_list']}>
-				<a href="/chats">chats</a>
-			</ul>
-		)
-	}else{
-		return (
-			<ul className={cl['test_page_list']}>
-				<a href="/sign_up">sign_up</a>
-				<a href="/sign_in">sign_in</a>
+				<Link to="/sign_up">sign_up</Link>
+				<Link to="/sign_in">sign_in</Link>
 			</ul>
 		)
 	}

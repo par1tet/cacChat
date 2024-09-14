@@ -5,10 +5,12 @@ import clsx from "clsx";
 import { Button } from "../../shared/UI-components/button/Button";
 import axios from 'axios'
 import { serverLink } from "../../shared/api/serverLink";
+import { Link, useNavigate } from "react-router-dom";
 
 type Props = {};
 
 export default function SignUpPage({}: Props) {
+	const navigate = useNavigate()
 	const pageTitle = "Sign up";
 
 	const errorTextRef = useRef<HTMLSpanElement>(null)
@@ -85,6 +87,7 @@ export default function SignUpPage({}: Props) {
 			})
 			.then(r => localStorage.setItem('token', r.data.token))
 
+			navigate('/chats')
 		} else {
 			console.log("Validation failed.");
 		}
@@ -96,7 +99,7 @@ export default function SignUpPage({}: Props) {
 			<div className={clsx(cl["sign_form"],cl["form"])}>
 				<div className={cl["form_title_block"]}>
 					<p className={cl["form_title"]}>Don't have an account? Sign up now.</p>
-					<a href="/sign_in">or Sign in</a>
+					<Link to="/sign_in">or Sign in</Link>
 				</div>
 				<input type="email" name="email" value={userData.email} onChange={handleChange} placeholder="Email" />
 				<input type="text" name="username" value={userData.username} onChange={handleChange} placeholder="Username"/>

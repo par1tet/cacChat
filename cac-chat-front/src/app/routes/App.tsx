@@ -3,43 +3,19 @@ import SignUpPage from '../../pages/sign-up/SignUpPage';
 import SignInPage from '../../pages/sign-in/SignInPage';
 import ChatsPage from '../../pages/chats/ChatsPage';
 import TestPage from '../test-page/TestPage';
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    errorElement: <div>Ква Ква Ква</div>,
-    children: [
-      {
-        path: "sign_up",
-        element: <SignUpPage />,
-      },
-      {
-        path: "sign_in",
-        element: <SignInPage />,
-      },
-      {
-        path: "chats",
-        element: <ChatsPage />,
-      },
-      {
-        path: "",
-        element: <TestPage />,
-      },
-    ],
-  },
-])
+import { Routes, Route } from "react-router-dom";
 
 function App() {
-  
-  return (
-    <>
-      <RouterProvider router={router}/>
-    </>
-  )
+	return (
+		<main>
+			<Routes>
+				<Route path='/' element={<TestPage />}></Route>
+				<Route path='/chats' element={<ChatsPage />}></Route>
+				<Route path='/sign_in' element={<SignInPage />}></Route>
+				<Route path='/sign_up' element={<SignUpPage />}></Route>
+			</Routes>
+		</main>
+	)
 }
 
 export default App
