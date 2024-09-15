@@ -25,6 +25,7 @@ type chat = {
 export default function ChatsPage({}: Props) {
 	const navigate = useNavigate()
 	const sideBarRef = useRef<HTMLDivElement>(null)
+	const modalCreateWindowRef = useRef<HTMLDivElement>(null)
 	const [chatList, setChatList] = useState<chat[]>([])
 
 	useEffect(() => {
@@ -73,7 +74,36 @@ export default function ChatsPage({}: Props) {
 		sideBarRef.current.style.transform = `matrix(1, 0, 0, 1, -${computedStylesSideBar.width.slice(0, -2)}, 0)`
 	}
 
+	function handleClickCreateChat(e: any) {
+		if(!sideBarRef.current) return undefined
+		if(!modalCreateWindowRef.current) return undefined
+
+		console.log(jwtDecode((localStorage.getItem('token') as string)))
+
+		const computedStylesSideBar = getComputedStyle(sideBarRef.current)
+		sideBarRef.current.style.transform = `matrix(1, 0, 0, 1, -${computedStylesSideBar.width.slice(0, -2)}, 0)`
+
+		modalCreateWindowRef.current.classList.add(cl['modalCreatechat-show'])
+	}
+
+	function handleClickCloseModal(e: any) {
+		if(!modalCreateWindowRef.current) return undefined
+
+		modalCreateWindowRef.current.classList.remove(cl['modalCreatechat-show'])
+
+		const titleChat = document.querySelector<HTMLInputElement>('#titlechat')
+		if(!titleChat) return undefined
+
+		axios.post(serverLink("chats/create"), {
+			userToken: localStorage.getItem('token'),
+			title: titleChat.value
+		})
+
+		titleChat.value = ''
+	}
+
 	return (
+	<>
 		<div className={cl["chatscontent"]}>
 			<div className={cl["chatscontent__chats"]}>
 				<div className={cl["chatscontent__chats-manage"]}>
@@ -96,13 +126,13 @@ export default function ChatsPage({}: Props) {
 				<div className={cl["chatscontent__chats-sidebar"]} ref={sideBarRef}>
 					<div className={cl["chatscontent__chats-sidebar-manage"]}>
 						<button onClick={handleClickClose}>
-							<img src={fiolBack} alt="burger" draggable={false}/>
+							<img src={fiolBack} alt="back" draggable={false}/>
 						</button>
 						<span>{(jwtDecode((localStorage.getItem('token') as string)) as tokenPayload).nickname}</span>
 						<div></div>
 					</div>
 					<div className={cl["chatscontent__chats-sidebar-actions"]}>
-						<button onClick={handleClickClose}>
+						<button onClick={handleClickCreateChat}>
 							<span>Create chat</span>
 						</button>
 					</div>
@@ -121,5 +151,21 @@ export default function ChatsPage({}: Props) {
 				</div>
 			</div>
 		</div>
+		<div className={cl['modalCreatechat']} ref={modalCreateWindowRef}>
+			<div className={cl['modalCreatechat__title']}>
+				<button onClick={handleClickCloseModal}>
+					<img src={fiolBack} alt="burger" draggable={false}/>
+				</button>
+			</div>
+			<div className={cl['modalCreatechat__inputs']}>
+				<input type="text" placeholder="Title..." id="titlechat"/>
+			</div>
+			<div className={cl['modalCreatechat__createbutton']}>
+				<button onClick={handleClickCloseModal}>
+					<span>Create</span>
+				</button>
+			</div>
+		</div>
+	</>
 	);
 }

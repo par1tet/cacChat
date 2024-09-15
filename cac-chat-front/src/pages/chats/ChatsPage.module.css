@@ -236,3 +236,87 @@
 	width: 100%;
 	height: 100%;
 }
+
+.modalCreatechat {
+	position: fixed;
+	display: none;
+
+	width: 500px;
+	height: 500px;
+
+	background-color: #363636;
+
+	flex-direction: column;
+
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+
+	border-radius: 6px;
+
+	z-index: 6;
+}
+
+.modalCreatechat-show {
+	display: flex;
+}
+
+.modalCreatechat__title {
+	width: 100%;
+	height: 30px;
+}
+
+.modalCreatechat__title > button{
+	width: 30px;
+
+	background-color: #00000000;
+	border: 0;
+
+	cursor: pointer;
+
+	border-radius: 6px;
+}
+
+.modalCreatechat__title > button > img{
+	width: 30px;
+
+	border-radius: 6px;
+}
+
+.modalCreatechat__inputs {
+	display: flex;
+
+	justify-content: center;
+
+	width: 100%;
+}
+
+.modalCreatechat__inputs > input {
+	padding: 4px;
+	padding-left: 8px;
+	border-radius: 50px;
+
+	background-color: #383838;
+
+	color: white;
+}
+
+.modalCreatechat__createbutton {
+	position: absolute;
+
+	top: 95%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+
+}
+
+.modalCreatechat__createbutton > button{
+	padding: 6px 12px;
+	border: 0;
+
+	border-radius: 6px;
+
+	cursor: pointer;
+
+	background-color: #870f92;
+}
