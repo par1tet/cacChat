@@ -57,7 +57,7 @@
 
 	align-items: center;
 
-	background-color: #000000;
+	background-color: #252525;
 }
 
 .chatscontent__chats-sidebar-manage > span {
@@ -78,6 +78,25 @@
 	border-radius: 6px;
 }
 
+.chatscontent__chats-sidebar-actions {
+	display: flex;
+
+	width: 100%;
+
+	background-color: #ad6868;
+}
+
+.chatscontent__chats-sidebar-actions > *{
+	height: 40px;
+	width: 100%;
+
+	background-color: #363636;
+
+	border: 0;
+
+	cursor: pointer;
+}
+
 .chatscontent__chats-sidebar {
 	display: flex;
 	position: absolute;
@@ -89,6 +108,8 @@
 
 	transform: translate(-100%, 0%);
 	transition: 300ms;
+
+	flex-direction: column;
 
 	background-color: #000000;
 }

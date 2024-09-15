@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import cl from "./ChatsPage.module.css";
 import vite from "/vite.svg";
 import clsx from "clsx";
@@ -7,6 +7,8 @@ import fiolBurger from './../../../public/fiol_burger.png'
 import fiolBack from './../../../public/fiol_back.png'
 import { useRef } from "react";
 import { jwtDecode } from "jwt-decode";
+import axios from "axios";
+import { serverLink } from "../../shared/api/serverLink";
 type Props = {};
 
 type tokenPayload = {
@@ -15,30 +17,22 @@ type tokenPayload = {
 	nickname: string
 }
 
+type chat = {
+	title: string,
+	id: number
+}
+
 export default function ChatsPage({}: Props) {
 	const navigate = useNavigate()
 	const sideBarRef = useRef<HTMLDivElement>(null)
+	const [chatList, setChatList] = useState<chat[]>([])
 
-	const chatList = [
-		{
-			title: "hello",
-			img: vite,
-			lastMessage: "hello, world",
-			chatId: 0,
-		},
-		{
-			title: "hello",
-			img: vite,
-			lastMessage: "hello, world",
-			chatId: 1,
-		},
-		{
-			title: "hello",
-			img: vite,
-			lastMessage: "hello, world",
-			chatId: 2,
-		}
-	];
+	useEffect(() => {
+		axios.post(serverLink('chats/list'), {
+			userToken: localStorage.getItem('token')
+		})
+		.then(r => setChatList(r.data))
+	}, [])
 
 	const messageList = [
 		{
@@ -88,16 +82,17 @@ export default function ChatsPage({}: Props) {
 					</button>
 				</div>
 				<div className={cl["chatscontent__chats-list"]}>{
-					chatList.map(element =>
-						<div key={element.chatId} className={clsx(cl["chat_block"],cl["block"])}>
-							<img src={element.img} />
+					chatList.map((element) =>
+						<div key={element.id} className={clsx(cl["chat_block"],cl["block"])}>
+							<img src={vite} />
 							<div className={cl["infocolumn"]}>
 								<p className={cl["title"]}>{element.title}</p>
-								<p className={cl["lastmessage"]}>{element.lastMessage}</p>
+								<p className={cl["lastmessage"]}>hello world</p>
 							</div>
 						</div>
 					)
 				}</div>
+				{(()=>{console.log(chatList); return null})()}
 				<div className={cl["chatscontent__chats-sidebar"]} ref={sideBarRef}>
 					<div className={cl["chatscontent__chats-sidebar-manage"]}>
 						<button onClick={handleClickClose}>
@@ -105,6 +100,11 @@ export default function ChatsPage({}: Props) {
 						</button>
 						<span>{(jwtDecode((localStorage.getItem('token') as string)) as tokenPayload).nickname}</span>
 						<div></div>
+					</div>
+					<div className={cl["chatscontent__chats-sidebar-actions"]}>
+						<button onClick={handleClickClose}>
+							<span>Create chat</span>
+						</button>
 					</div>
 				</div>
 			</div>
