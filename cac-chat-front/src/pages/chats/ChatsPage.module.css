@@ -46,6 +46,38 @@
 	border-radius: 6px;
 }
 
+.chatscontent__chats-sidebar-manage {
+	display: flex;
+
+	width: 100%;
+	height: 46px;
+
+	flex-direction: row;
+	justify-content: space-between;
+
+	align-items: center;
+
+	background-color: #000000;
+}
+
+.chatscontent__chats-sidebar-manage > span {
+	transform: translate(-50%);
+}
+
+.chatscontent__chats-sidebar-manage > button {
+	background-color: #00000000;
+
+	border: 0;
+	border-radius: 6px;
+
+	cursor: pointer;
+}
+
+.chatscontent__chats-sidebar-manage > button > img{
+	width: 40px;
+	border-radius: 6px;
+}
+
 .chatscontent__chats-sidebar {
 	display: flex;
 	position: absolute;
