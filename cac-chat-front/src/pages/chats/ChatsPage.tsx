@@ -4,10 +4,13 @@ import vite from "/vite.svg";
 import clsx from "clsx";
 import { useNavigate } from "react-router-dom";
 import fiolBurger from './../../../public/fiol_burger.png'
+import fiolBack from './../../../public/fiol_back.png'
+import { useRef } from "react";
 type Props = {};
 
 export default function ChatsPage({}: Props) {
 	const navigate = useNavigate()
+	const sideBarRef = useRef<HTMLDivElement>(null)
 
 	const chatList = [
 		{
@@ -55,12 +58,24 @@ export default function ChatsPage({}: Props) {
 		}
 	}, [chatList]);
 
+	function handleClick(e: any) {
+		if(!sideBarRef.current) return undefined
+		sideBarRef.current.style.transform = 'matrix(1, 0, 0, 1, 0, 0)'
+	}
+
+	function handleClickClose(e: any) {
+		if(!sideBarRef.current) return undefined
+
+		const computedStylesSideBar = getComputedStyle(sideBarRef.current)
+		sideBarRef.current.style.transform = `matrix(1, 0, 0, 1, -${computedStylesSideBar.width.slice(0, -2)}, 0)`
+	}
+
 	return (
 		<div className={cl["chatscontent"]}>
 			<div className={cl["chatscontent__chats"]}>
 				<div className={cl["chatscontent__chats-manage"]}>
-					<button onClick={e => console.log('hello world')}>
-						<img src={fiolBurger} alt="burger" />
+					<button onClick={handleClick}>
+						<img src={fiolBurger} alt="burger" draggable={false}/>
 					</button>
 				</div>
 				<div className={cl["chatscontent__chats-list"]}>{
@@ -74,6 +89,13 @@ export default function ChatsPage({}: Props) {
 						</div>
 					)
 				}</div>
+				<div className={cl["chatscontent__chats-sidebar"]} ref={sideBarRef}>
+					<div className={cl["chatscontent__chats-manage"]}>
+						<button onClick={handleClickClose}>
+							<img src={fiolBack} alt="burger" draggable={false}/>
+						</button>
+					</div>
+				</div>
 			</div>
 			<div className={cl["chatscontent__chatmessages"]}>
 				<div className={cl['messages']}>
