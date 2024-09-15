@@ -3,12 +3,13 @@ import cl from "./ChatsPage.module.css";
 import vite from "/vite.svg";
 import clsx from "clsx";
 import { useNavigate } from "react-router-dom";
-import fiolBurger from './../../../public/fiol_burger.png'
-import fiolBack from './../../../public/fiol_back.png'
+import fiolBurger from '/fiol_burger.png'
+import fiolBack from '/fiol_back.png'
 import { useRef } from "react";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import { serverLink } from "../../shared/api/serverLink";
+import { socket } from "../../shared/socket/socket";
 type Props = {};
 
 type tokenPayload = {
@@ -22,43 +23,52 @@ type chat = {
 	id: number
 }
 
+type message = {
+	text: string,
+	type: string
+}
+
 export default function ChatsPage({}: Props) {
 	const navigate = useNavigate()
 	const sideBarRef = useRef<HTMLDivElement>(null)
 	const modalCreateWindowRef = useRef<HTMLDivElement>(null)
 	const [chatList, setChatList] = useState<chat[]>([])
-
-	useEffect(() => {
-		axios.post(serverLink('chats/list'), {
-			userToken: localStorage.getItem('token')
-		})
-		.then(r => setChatList(r.data))
-	}, [])
-
-	const messageList = [
-		{
-			content: "hello",
-			type: 'me',
-		},
-		{
-			content: "how are u",
-			type: 'me',
-		},
-		{
-			content: "hi",
-			type: 'another',
-		},
-		{
-			content: "okay, are u?",
-			type: 'another',
-		},
-	];
+	const [messageList, setMessageList] = useState<message[]>([])
+	console.log('123123')
 
 	useEffect(() => {
 		if(!localStorage.getItem('token')){
 			navigate('/')
 		}
-	}, [chatList]);
+
+		axios.post(serverLink('chats/list'), {
+			userToken: localStorage.getItem('token')
+		})
+		.then(r => setChatList(r.data))
+
+		axios.post(serverLink('messages/get'), {
+			chatId: 1
+		})
+		.then(r => {
+			console.log(r.data)
+			// setMessageList(r.data)
+		})
+
+		socket.connect()
+	}, [])
+
+	useEffect(() => {
+		socket.on('1', data => {
+			setMessageList(prevMessages => [...prevMessages, {
+				text: data.text,
+				type: 'another'
+			}])
+
+			console.log(messageList)
+		})
+
+		return ()=>{socket.off('1')}
+	}, [socket])
 
 	function handleClick(e: any) {
 		if(!sideBarRef.current) return undefined
@@ -102,6 +112,29 @@ export default function ChatsPage({}: Props) {
 		titleChat.value = ''
 	}
 
+	async function handleEnterMessage(e: any){
+		if(e.key === 'Enter'){
+			console.log(e.target.value)
+
+			if(e.target.value.trim() === ''){
+				return undefined
+			}
+
+			await socket.emit('sendMessage', {
+				text: e.target.value.trim(),
+				userToken: localStorage.getItem('token'),
+				chatId: 1
+			})
+
+			await setMessageList(prevMessages => [...prevMessages, {
+				text: e.target.value.trim(),
+				type: 'me'
+			}])
+
+			e.target.value = ''
+		}
+	}
+
 	return (
 	<>
 		<div className={cl["chatscontent"]}>
@@ -122,7 +155,6 @@ export default function ChatsPage({}: Props) {
 						</div>
 					)
 				}</div>
-				{(()=>{console.log(chatList); return null})()}
 				<div className={cl["chatscontent__chats-sidebar"]} ref={sideBarRef}>
 					<div className={cl["chatscontent__chats-sidebar-manage"]}>
 						<button onClick={handleClickClose}>
@@ -141,13 +173,13 @@ export default function ChatsPage({}: Props) {
 			<div className={cl["chatscontent__chatmessages"]}>
 				<div className={cl['messages']}>
 					{messageList.map((message, index) =>
-						<div className={cl[`messagewrapper`]} key={index}>
-							<span className={clsx(cl[`message`], cl[`message-${message.type}`])}>{message.content}</span>
+						<div className={clsx(cl[`messagewrapper`], cl[`messagewrapper-${message.type}`])} key={index}>
+							<span>{message.text}</span>
 						</div>
 					)}
 				</div>
 				<div className={cl['inputmessage']}>
-					<input type="text" placeholder="Enter message..."/>
+					<input type="text" placeholder="Enter message..." onKeyDown={handleEnterMessage}/>
 				</div>
 			</div>
 		</div>

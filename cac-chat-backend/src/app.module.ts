@@ -12,7 +12,7 @@ import { Message } from './messages/messages.model';
 
 @Module({
   imports: [
-     ConfigModule.forRoot({
+    ConfigModule.forRoot({
       envFilePath: `./.${process.env.NODE_ENV}.env`,
     }),
     SequelizeModule.forRoot({
