@@ -7,6 +7,8 @@ import { AuthModule } from './auth/auth.module';
 import { ChatsModule } from './chats/chats.module';
 import { Chat } from './chats/chats.model';
 import { UserChat } from './chats/chat-user.model';
+import { MessagesModule } from './messages/messages.module';
+import { Message } from './messages/messages.model';
 
 @Module({
 	imports: [ConfigModule.forRoot({
@@ -19,12 +21,13 @@ import { UserChat } from './chats/chat-user.model';
 		username: process.env.POSTGRES_USER,
 		password: process.env.POSTGRES_PASSWORD,
 		database: process.env.POSTGRES_DB,
-		models: [User, Chat, UserChat],
+		models: [User, Chat, UserChat, Message],
 		synchronize: true,
 		autoLoadModels: true,
 	}),
 	UsersModule,
 	AuthModule,
-	ChatsModule],
+	ChatsModule,
+	MessagesModule],
 })
 export class AppModule {}
