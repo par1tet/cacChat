@@ -202,23 +202,31 @@
 	box-sizing: border-box;
 	justify-content: flex-end;
 
-	gap: 16px;
+	gap: 4px;
 }
 
 .messagewrapper {
-}
+	width: 400px;
+	white-space:normal;
+	word-wrap: break-word;
 
-.message {
+
+	background-color: #751175;
 	padding: 4px;
+
 	border-radius: 6px;
 }
 
-.message-me {
-	background-color: #751175;
-}
+.messagewrapper-another {
+	width: 400px;
+	white-space:normal;
+	word-wrap: break-word;
 
-.message-another {
-	background-color: #1a1414;
+
+	background-color: #1d1b1d;
+	padding: 4px;
+
+	border-radius: 6px;
 }
 
 .inputmessage {
