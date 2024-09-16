@@ -13,7 +13,7 @@ export class Message extends Model<Message, MessageCreateAttrs> {
   @Column({type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true})
   id: number
 
-  @Column({type: DataType.STRING, allowNull: false})
+  @Column({type: DataType.TEXT, allowNull: false})
   text: string
 
   @ForeignKey(() => User)
