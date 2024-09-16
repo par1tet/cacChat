@@ -4,11 +4,13 @@ import { Socket, Server } from "socket.io";
 import { MessagesService } from "./messages.service";
 import { CreateMessageDto } from "./dto/createMessage.dto";
 import { DeleteMessageDto } from "./dto/deleteMessage.dto";
+import { UsersService } from "src/users/users.service";
 
 @WebSocketGateway({cors: true})
 export class MessageGateway {
 	constructor(
-		private MessageService: MessagesService
+		private MessageService: MessagesService,
+		private UsersService: UsersService
 	) {}
 
 

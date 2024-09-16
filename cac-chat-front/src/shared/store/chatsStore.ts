@@ -17,4 +17,16 @@ export class chatsStore {
     constructor(){
         makeAutoObservable(this)
     }
+
+    setChats(newValue: chat[]){
+        this.chats = newValue
+    }
+
+    setCurrentChat(idChat: number) {
+        this.currentChat = idChat
+    }
+
+    addMessageInChat(chatId: number, message: message) {
+        this.chats[chatId].messages.push(message)
+    }
 }

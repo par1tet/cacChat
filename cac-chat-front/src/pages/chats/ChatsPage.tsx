@@ -13,7 +13,9 @@ import { socket } from "../../shared/socket/socket";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../shared/hooks/useStore";
 import { rootStore } from "../../shared/store/rootStore";
-import { toJS } from "mobx";
+// import { toJS } from "mobx";
+import { chat } from "../../shared/types/chats";
+import { message } from "../../shared/types/chats";
 
 type Props = {};
 
@@ -23,22 +25,12 @@ type tokenPayload = {
 	nickname: string
 }
 
-type chat = {
-	title: string,
-	id: number
-}
-
-type message = {
-	content: string,
-	type: string
-}
-
 export const ChatsPage = observer(({}: Props) => {
 	const myRootStore: rootStore = useStore()
 	const navigate = useNavigate()
 	const sideBarRef = useRef<HTMLDivElement>(null)
 	const modalCreateWindowRef = useRef<HTMLDivElement>(null)
-	const [chatList, setChatList] = useState<chat[]>([])
+	const [chatList, setChatList] = useState<chat[]>(myRootStore.chatsStore.chats)
 	const [messageList, setMessageList] = useState<message[]>([])
 
 	useEffect(() => {
@@ -55,8 +47,7 @@ export const ChatsPage = observer(({}: Props) => {
 			})
 			.then(r => {
 				console.log(r.data)
-				// setMessageList(r.data)
-				myRootStore.chatsStore.chats = r.data
+				myRootStore.chatsStore.setChats(r.data)
 			})
 
 			socket.connect()
@@ -64,13 +55,23 @@ export const ChatsPage = observer(({}: Props) => {
 	}, [])
 
 	useEffect(() => {
-		socket.on('1', data => {
-			setMessageList(prevMessages => [...prevMessages, {
-				content: data.content,
-				type: 'another'
-			}])
+		console.log(myRootStore.chatsStore.currentChat)
+		if(myRootStore.chatsStore.currentChat === -1) return undefined
+		setMessageList(myRootStore.chatsStore.chats[myRootStore.chatsStore.currentChat].messages)
+	}, [myRootStore.chatsStore.currentChat])
 
-			console.log(messageList)
+	useEffect(() => {
+		console.log(myRootStore.chatsStore.currentChat)
+		if(myRootStore.chatsStore.currentChat === -1) return undefined
+		setMessageList(myRootStore.chatsStore.chats[myRootStore.chatsStore.currentChat].messages)
+	}, [myRootStore.chatsStore.chats])
+
+	useEffect(() => {
+		socket.on('1', data => {
+			myRootStore.chatsStore.addMessageInChat((data.chatId-1), {
+				content: data.content,
+				userId: data.userId
+			})
 		})
 
 		return ()=>{socket.off('1')}
@@ -79,9 +80,6 @@ export const ChatsPage = observer(({}: Props) => {
 	function handleClick(e: any) {
 		if(!sideBarRef.current) return undefined
 		sideBarRef.current.style.transform = 'matrix(1, 0, 0, 1, 0, 0)'
-
-		console.log(toJS(myRootStore.chatsStore.chats))
-
 	}
 
 	function handleClickClose(e: any) {
@@ -135,13 +133,17 @@ export const ChatsPage = observer(({}: Props) => {
 				chatId: 1
 			})
 
-			await setMessageList(prevMessages => [...prevMessages, {
+			myRootStore.chatsStore.addMessageInChat((myRootStore.chatsStore.currentChat), {
 				content: e.target.value.trim(),
-				type: 'me'
-			}])
+				userId: (jwtDecode(localStorage.getItem('token') as string) as any).id
+			})
 
 			e.target.value = ''
 		}
+	}
+
+	function handleChangeChat(e: any){
+		myRootStore.chatsStore.setCurrentChat(+e.currentTarget.attributes['data-chat-id'].value)
 	}
 
 	return (
@@ -154,8 +156,13 @@ export const ChatsPage = observer(({}: Props) => {
 					</button>
 				</div>
 				<div className={cl["chatscontent__chats-list"]}>{
-					chatList.map((element) =>
-						<div key={element.id} className={clsx(cl["chat_block"],cl["block"])}>
+					chatList.map((element, index) =>
+						<div
+							key={index}
+							className={clsx(cl["chat_block"],cl["block"])}
+							data-chat-id={index}
+							onClick={handleChangeChat}
+						>
 							<img src={vite} />
 							<div className={cl["infocolumn"]}>
 								<p className={cl["title"]}>{element.title}</p>
@@ -182,7 +189,10 @@ export const ChatsPage = observer(({}: Props) => {
 			<div className={cl["chatscontent__chatmessages"]}>
 				<div className={cl['messages']}>
 					{messageList.map((message, index) =>
-						<div className={clsx(cl[`messagewrapper`], cl[`messagewrapper-${message.type}`])} key={index}>
+						<div
+							className={clsx(cl[`messagewrapper`],
+							cl[`messagewrapper-${'me'}`])}
+							key={index}						>
 							<span>{message.content}</span>
 						</div>
 					)}

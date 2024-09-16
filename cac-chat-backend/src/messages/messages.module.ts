@@ -6,6 +6,7 @@ import { Message } from './messages.model';
 import { JwtModule } from '@nestjs/jwt';
 import { MessageGateway } from './messages-gateway';
 import { UserChat } from 'src/chats/chat-user.model';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { UserChat } from 'src/chats/chat-user.model';
       signOptions: {
         expiresIn: '24h'
       }
-    })
+    }),
+    UsersModule
   ],
   providers: [MessagesService, MessageGateway],
   controllers: [MessagesController]
