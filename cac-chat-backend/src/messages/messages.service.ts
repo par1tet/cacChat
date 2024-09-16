@@ -16,7 +16,7 @@ export class MessagesService {
   private async getUserId(token: string): Promise<number> {
     try{
       const payload = this.jwtService.verify(token, {
-        secret: process.env.PRIVATE_KEY
+        secret: process.env.PRIVATE_KEY || "SEC"
       })
       if(payload){
         return payload.id

@@ -96,11 +96,10 @@ export class ChatsService {
 
 	async findAllChatMessages(dto: findAllChatMessages){
     try{
-      const messages = await this.messageRepository.findAll({where: {chatId: dto.chatId}})
-      return messages
-    }catch(e){
-      throw new HttpException("Такого чата не существует", HttpStatus.BAD_REQUEST)
-    }
-  }
-
+		const messages = await this.messageRepository.findAll({where: {chatId: dto.chatId}})
+		return messages
+	}catch(e){
+		throw new HttpException("Такого чата не существует", HttpStatus.BAD_REQUEST)
+	}
+	}
 }
