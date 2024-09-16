@@ -6,10 +6,11 @@ import { User } from 'src/users/users.model';
 import { Chat } from './chats.model';
 import { UserChat } from './chat-user.model';
 import { JwtModule } from '@nestjs/jwt';
+import { Message } from 'src/messages/messages.model';
 
 @Module({
   imports: [
-    SequelizeModule.forFeature([User, Chat, UserChat]),
+    SequelizeModule.forFeature([User, Chat, UserChat, Message]),
     JwtModule.register({
       secret: process.env.PRIVATE_KEY || 'SEC',
       signOptions: {

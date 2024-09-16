@@ -5,6 +5,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { User } from './users.model';
 import { Chat } from 'src/chats/chats.model';
 import { UserChat } from 'src/chats/chat-user.model';
+import { Message } from 'src/messages/messages.model';
 
 @Module({
 	controllers: [UsersController],
@@ -12,7 +13,8 @@ import { UserChat } from 'src/chats/chat-user.model';
 	imports: [
 		SequelizeModule.forFeature([
 			User,
-			Chat
+			Chat,
+			Message
 		])
 	],
 	exports: [

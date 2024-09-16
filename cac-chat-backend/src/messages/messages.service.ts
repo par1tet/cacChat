@@ -4,7 +4,7 @@ import { Message } from './messages.model';
 import { CreateMessageDto } from './dto/createMessage.dto';
 import { DeleteMessageDto } from './dto/deleteMessage.dto';
 import { JwtService } from '@nestjs/jwt';
-import { findAllChatMessages } from './dto/findAllChatMessage.dto';
+import { UserChat } from 'src/chats/chat-user.model';
 
 @Injectable()
 export class MessagesService {
@@ -46,14 +46,4 @@ export class MessagesService {
       throw new HttpException("Такого пользователя или сообщения не существует", HttpStatus.BAD_REQUEST)
     }
   }
-
-  async findAllChatMessages(dto: findAllChatMessages){
-    try{
-      const messages = await this.messageRepository.findAll({where: {chatId: dto.chatId}})
-      return messages
-    }catch(e){
-      throw new HttpException("Такого чата не существует", HttpStatus.BAD_REQUEST)
-    }
-  }
-
 }
