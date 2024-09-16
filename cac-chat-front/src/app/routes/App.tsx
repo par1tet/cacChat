@@ -1,6 +1,6 @@
 // import cl from './App.moudle.css';
 import { Route, Routes } from "react-router-dom";
-import ChatsPage from '../../pages/chats/ChatsPage.tsx';
+import { ChatsPage } from '../../pages/chats/ChatsPage.tsx';
 import SignInPage from '../../pages/sign-in/SignInPage.tsx';
 import SignUpPage from '../../pages/sign-up/SignUpPage.tsx';
 import MainPage from '../test-page/MainPage.tsx';

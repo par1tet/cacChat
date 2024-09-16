@@ -3,7 +3,7 @@ import { Chat } from "src/chats/chats.model";
 import { User } from "src/users/users.model";
 
 interface MessageCreateAttrs {
-  text: string,
+  content: string,
   userId: number,
   chatId: number,
 }
@@ -14,7 +14,7 @@ export class Message extends Model<Message, MessageCreateAttrs> {
   id: number;
 
   @Column({type: DataType.TEXT, allowNull: false})
-  text: string;
+  content: string;
 
   @ForeignKey(() => User)
   @Column({type: DataType.INTEGER, allowNull: false})

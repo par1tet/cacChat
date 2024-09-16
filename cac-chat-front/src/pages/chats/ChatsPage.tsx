@@ -10,6 +10,10 @@ import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import { serverLink } from "../../shared/api/serverLink";
 import { socket } from "../../shared/socket/socket";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../shared/hooks/useStore";
+import { rootStore } from "../../shared/store/rootStore";
+import { toJS } from "mobx";
 
 type Props = {};
 
@@ -25,43 +29,44 @@ type chat = {
 }
 
 type message = {
-	text: string,
+	content: string,
 	type: string
 }
 
-export default function ChatsPage({}: Props) {
+export const ChatsPage = observer(({}: Props) => {
+	const myRootStore: rootStore = useStore()
 	const navigate = useNavigate()
 	const sideBarRef = useRef<HTMLDivElement>(null)
 	const modalCreateWindowRef = useRef<HTMLDivElement>(null)
 	const [chatList, setChatList] = useState<chat[]>([])
 	const [messageList, setMessageList] = useState<message[]>([])
-	console.log('123123')
 
 	useEffect(() => {
 		if(!localStorage.getItem('token')){
 			navigate('/')
+		}else{
+			axios.post(serverLink('chats/list'), {
+				userToken: localStorage.getItem('token')
+			})
+			.then(r => setChatList(r.data))
+	
+			axios.post(serverLink('chats/get_chats_with_messages_for_user'), {
+				userToken: localStorage.getItem('token')
+			})
+			.then(r => {
+				console.log(r.data)
+				// setMessageList(r.data)
+				myRootStore.chatsStore.chats = r.data
+			})
+
+			socket.connect()
 		}
-
-		axios.post(serverLink('chats/list'), {
-			userToken: localStorage.getItem('token')
-		})
-		.then(r => setChatList(r.data))
-
-		axios.post(serverLink('messages/get'), {
-			chatId: 1
-		})
-		.then(r => {
-			console.log(r.data)
-			// setMessageList(r.data)
-		})
-
-		socket.connect()
 	}, [])
 
 	useEffect(() => {
 		socket.on('1', data => {
 			setMessageList(prevMessages => [...prevMessages, {
-				text: data.text,
+				content: data.content,
 				type: 'another'
 			}])
 
@@ -74,6 +79,9 @@ export default function ChatsPage({}: Props) {
 	function handleClick(e: any) {
 		if(!sideBarRef.current) return undefined
 		sideBarRef.current.style.transform = 'matrix(1, 0, 0, 1, 0, 0)'
+
+		console.log(toJS(myRootStore.chatsStore.chats))
+
 	}
 
 	function handleClickClose(e: any) {
@@ -122,13 +130,13 @@ export default function ChatsPage({}: Props) {
 			}
 
 			await socket.emit('sendMessage', {
-				text: e.target.value.trim(),
+				content: e.target.value.trim(),
 				userToken: localStorage.getItem('token'),
 				chatId: 1
 			})
 
 			await setMessageList(prevMessages => [...prevMessages, {
-				text: e.target.value.trim(),
+				content: e.target.value.trim(),
 				type: 'me'
 			}])
 
@@ -175,7 +183,7 @@ export default function ChatsPage({}: Props) {
 				<div className={cl['messages']}>
 					{messageList.map((message, index) =>
 						<div className={clsx(cl[`messagewrapper`], cl[`messagewrapper-${message.type}`])} key={index}>
-							<span>{message.text}</span>
+							<span>{message.content}</span>
 						</div>
 					)}
 				</div>
@@ -201,4 +209,4 @@ export default function ChatsPage({}: Props) {
 		</div>
 	</>
 	);
-}
+})

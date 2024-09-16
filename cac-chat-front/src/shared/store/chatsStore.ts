@@ -12,6 +12,7 @@ type chat = {
 
 export class chatsStore {
     chats: chat[] = []
+    currentChat: number = -1
 
     constructor(){
         makeAutoObservable(this)
