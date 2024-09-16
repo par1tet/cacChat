@@ -66,34 +66,33 @@ export class ChatsService {
 	}
 
 	async findAllUserChats(dto: FindAllUserChatsDto) {
-		try{
-			const userId = await this.getUserId(dto.userToken)
-			const chats = await Chat.findAll({
-				attributes: ['id', "title", "userId", "createdAt"],
-				include: [
-					{
-						model: Message,
-						as: 'messages',
-						attributes: ['id', 'text', 'createdAt', 'userId'],
-						required: false
-					},
-					{
-						model: User,
-						attributes: [],
-						through: {
-							attributes: [],
-							where: { userId }
-						}
-					}
-				]
-			});
+    try {
+        const userId = await this.getUserId(dto.userToken);
 
-			return chats
-		}catch(e){
-      throw new HttpException("Такого пользователя не существует", HttpStatus.BAD_REQUEST)
-			
-		}
+        const chats = await Chat.findAll({
+            attributes: ['id', 'title', 'createdAt'],
+            include: [
+                {
+                    model: Message,
+                    as: 'messages',
+                    attributes: ['id', 'text', 'createdAt', 'userId'],
+                    required: false,
+                },
+                {
+                    model: User,
+                    as: 'users',
+                    where: { id: userId },
+                    through: { attributes: [] },
+                }
+            ],
+        });
+
+        return chats;
+    } catch (e) {
+        throw new HttpException('Такого пользователя не существует', HttpStatus.BAD_REQUEST);
+    }
 	}
+
 
 	async findAllChatMessages(dto: findAllChatMessages){
     try{
