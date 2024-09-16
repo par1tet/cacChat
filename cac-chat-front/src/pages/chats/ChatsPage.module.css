@@ -118,9 +118,8 @@
 	width: 80%;
 }
 
-.chat_block{
+.chatblock{
 	display: flex;
-
 
 	padding: 5px;
 	box-sizing: border-box;
@@ -135,6 +134,10 @@
 	border: 1px solid rgb(56, 56, 56);
 
 	cursor: pointer;
+}
+
+.chatblock-current {
+	background: #870f92;
 }
 
 .block img{

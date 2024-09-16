@@ -67,14 +67,11 @@ export const ChatsPage = observer(({}: Props) => {
 	}, [myRootStore.chatsStore.chats])
 
 	useEffect(() => {
-		socket.on('1', data => {
-			myRootStore.chatsStore.addMessageInChat((data.chatId-1), {
-				content: data.content,
-				userId: data.userId
-			})
+		socket.on('gettingMessage', data => {
+			myRootStore.chatsStore.addMessageInChat((data.chatId-1), data.message)
 		})
 
-		return ()=>{socket.off('1')}
+		return ()=>{socket.off('gettingMessage')}
 	}, [socket])
 
 	function handleClick(e: any) {
@@ -130,7 +127,7 @@ export const ChatsPage = observer(({}: Props) => {
 			await socket.emit('sendMessage', {
 				content: e.target.value.trim(),
 				userToken: localStorage.getItem('token'),
-				chatId: 1
+				chatId: myRootStore.chatsStore.currentChat+1
 			})
 
 			myRootStore.chatsStore.addMessageInChat((myRootStore.chatsStore.currentChat), {
@@ -159,7 +156,12 @@ export const ChatsPage = observer(({}: Props) => {
 					chatList.map((element, index) =>
 						<div
 							key={index}
-							className={clsx(cl["chat_block"],cl["block"])}
+							className={clsx(cl["chatblock"],cl["block"], cl[(()=>{
+								if(index === myRootStore.chatsStore.currentChat){
+									return 'chatblock-current'
+								}
+								return ''
+							})()])}
 							data-chat-id={index}
 							onClick={handleChangeChat}
 						>
