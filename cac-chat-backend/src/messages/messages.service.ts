@@ -39,18 +39,11 @@ export class MessagesService {
   async deleteMessage(dto: DeleteMessageDto){
     try{
       const user = await this.getUserId(dto.userToken)
-      await this.messageRepository.destroy({where: {userId: user, id: dto.messageId}})
+      console.log({...dto, userId: user})
+      const message = await this.messageRepository.destroy({where: {userId: user, id: dto.messageId}})
       return "delete"
     }catch(e){
       throw new HttpException("Такого пользователя или сообщения не существует", HttpStatus.BAD_REQUEST)
-    }
-  }
-
-  async deleteAllChatMessages(chatId: number){
-    try{
-      await this.messageRepository.destroy({where: {chatId: chatId}})
-    }catch(e){
-      throw new HttpException("Неверный chatId, либо сообщений нет", HttpStatus.BAD_REQUEST)
     }
   }
 

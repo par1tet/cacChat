@@ -9,7 +9,6 @@ import { UserChat } from './chat-user.model';
 import { FindAllUserChatsDto } from './dto/findAllUserChats.dto';
 import { FindAllChatUsers } from './dto/findAllChatUsers.dto';
 import { JwtService } from '@nestjs/jwt';
-import { MessagesService } from 'src/messages/messages.service';
 
 @Injectable()
 export class ChatsService {
@@ -17,11 +16,10 @@ export class ChatsService {
 		@InjectModel(UserChat) private userChatRepository: typeof UserChat,
 		@InjectModel(User) private userRepository: typeof User,
 		@InjectModel(Chat) private chatRepository: typeof Chat,
-		private jwtService: JwtService,
-		private MessageService: MessagesService
+		private jwtService: JwtService
 	) {}
 
-	async getUserId(token: string): Promise<number> {
+	private async getUserId(token: string): Promise<number> {
 		try{
 			const payload = this.jwtService.verify(token, {
 				secret: process.env.PRIVATE_KEY
@@ -44,7 +42,6 @@ export class ChatsService {
 
 	async deleteChat(dto: DeleteChatDto) {
 		const userId = await this.getUserId(dto.userToken)
-		await this.MessageService.deleteAllChatMessages(dto.chatId)
 		await this.chatRepository.destroy({
 			where: { userId: userId, id: dto.chatId },
 		});
