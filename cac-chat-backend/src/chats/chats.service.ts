@@ -11,6 +11,7 @@ import { FindAllChatUsers } from './dto/findAllChatUsers.dto';
 import { JwtService } from '@nestjs/jwt';
 import { findAllChatMessages } from './dto/findAllChatMessage.dto';
 import { Message } from 'src/messages/messages.model';
+import { getChatsWithMessagesForUserDto } from './dto/getChatsWithMessagesForUser.dto';
 
 @Injectable()
 export class ChatsService {
@@ -66,40 +67,45 @@ export class ChatsService {
 	}
 
 	async findAllUserChats(dto: FindAllUserChatsDto) {
-    try {
-        const userId = await this.getUserId(dto.userToken);
+		try {
+			const userId = await this.getUserId(dto.userToken);
 
-        const chats = await Chat.findAll({
-            attributes: ['id', 'title', 'createdAt'],
-            include: [
-                {
-                    model: Message,
-                    as: 'messages',
-                    attributes: ['id', 'text', 'createdAt', 'userId'],
-                    required: false,
-                },
-                {
-                    model: User,
-                    as: 'users',
-                    where: { id: userId },
-                    through: { attributes: [] },
-                }
-            ],
-        });
+			const chats = await Chat.findAll({
+				attributes: ['id', 'title', 'createdAt'],
+				include: [
+					{
+						model: Message,
+						as: 'messages',
+						attributes: ['id', 'content', 'createdAt', 'userId'],
+						required: false,
+					},
+					{
+						model: User,
+						as: 'users',
+						where: { id: userId },
+						through: { attributes: [] },
+					}
+				],
+			});
 
-        return chats;
-    } catch (e) {
-        throw new HttpException('Такого пользователя не существует', HttpStatus.BAD_REQUEST);
-    }
+			return chats;
+		} catch (e) {
+			console.log(e)
+			throw new HttpException('Такого пользователя не существует', HttpStatus.BAD_REQUEST);
+		}
 	}
 
 
 	async findAllChatMessages(dto: findAllChatMessages){
-    try{
-		const messages = await this.messageRepository.findAll({where: {chatId: dto.chatId}})
-		return messages
-	}catch(e){
-		throw new HttpException("Такого чата не существует", HttpStatus.BAD_REQUEST)
+		try{
+			const messages = await this.messageRepository.findAll({where: {chatId: dto.chatId}})
+			return messages
+		}catch(e){
+			throw new HttpException("Такого чата не существует", HttpStatus.BAD_REQUEST)
+		}
 	}
+
+	async getChatsWithMessagesForUser(dto: getChatsWithMessagesForUserDto) {
+		return await this.findAllUserChats(dto)
 	}
 }

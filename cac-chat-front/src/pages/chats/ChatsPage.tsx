@@ -1,15 +1,19 @@
-import { useEffect, useState } from "react";
-import cl from "./ChatsPage.module.css";
-import vite from "/vite.svg";
-import clsx from "clsx";
-import { useNavigate } from "react-router-dom";
-import fiolBurger from '/fiol_burger.png'
-import fiolBack from '/fiol_back.png'
-import { useRef } from "react";
-import { jwtDecode } from "jwt-decode";
 import axios from "axios";
+import clsx from "clsx";
+import { jwtDecode } from "jwt-decode";
+import { observer } from "mobx-react-lite";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { serverLink } from "../../shared/api/serverLink";
+import { useStore } from "../../shared/hooks/useStore";
 import { socket } from "../../shared/socket/socket";
+import { rootStore } from "../../shared/store/rootStore";
+import cl from "./ChatsPage.module.css";
+import fiolBack from '/fiol_back.png';
+import fiolBurger from '/fiol_burger.png';
+import vite from "/vite.svg";
+// import { toJS } from "mobx";
+import { chat, message } from "../../shared/types/chats";
 
 type Props = {};
 
@@ -17,18 +21,6 @@ type tokenPayload = {
 	email: string,
 	id: number,
 	nickname: string
-}
-
-type chat = {
-	title: string,
-	id: number
-}
-
-type message = {
-	id: number,
-	text: string,
-	createdAt: string,
-	userId: number,
 }
 
 type userData = {
@@ -39,54 +31,61 @@ type userData = {
 	nickname: string
 }
 
-export default function ChatsPage({}: Props) {
+export const ChatsPage = observer(({}: Props) => {
+	const myRootStore: rootStore = useStore()
 	const navigate = useNavigate()
+	const myUserData: userData = jwtDecode(localStorage.getItem('token') as any);
+
 	const sideBarRef = useRef<HTMLDivElement>(null)
 	const modalCreateWindowRef = useRef<HTMLDivElement>(null)
-	const [chatList, setChatList] = useState<chat[]>([])
-	const [messageList, setMessageList] = useState<message[]>([])
-	const MyToken: any = localStorage.getItem('token')
-	const myUserData: userData = jwtDecode(MyToken);
+	const messageRef = useRef<HTMLDivElement>(null)
 
+	const [chatList, setChatList] = useState<chat[]>(myRootStore.chatsStore.chats)
+	const [messageList, setMessageList] = useState<message[]>([])
+
+	useEffect(() => {
+		if(!messageRef.current) return undefined
+		messageRef.current.scroll(0,9999999999999999999999999999999999)
+	})
 
 	useEffect(() => {
 		if(!localStorage.getItem('token')){
 			navigate('/')
+		}else{
+			axios.post(serverLink('chats/list'), {
+				userToken: localStorage.getItem('token')
+			})
+			.then(r => setChatList(r.data))
+	
+			axios.post(serverLink('chats/get_chats_with_messages_for_user'), {
+				userToken: localStorage.getItem('token')
+			})
+			.then(r => {
+				console.log(r.data)
+				myRootStore.chatsStore.setChats(r.data)
+			})
+
+			socket.connect()
 		}
-
-		axios.post(serverLink('chats/list'), {
-			userToken: localStorage.getItem('token')
-		})
-		.then(r => {
-			setChatList(r.data)
-			setMessageList(r.data[0].messages)
-		})
-
-		axios.post(serverLink('messages/get'), {
-			chatId: 1
-		})
-		.then(r => {
-			console.log(r.data)
-			// setMessageList(r.data)
-		})
-
-		socket.connect()
 	}, [])
 
 	useEffect(() => {
-		socket.on('1', data => {
-			setMessageList(prevMessages => [...prevMessages, {
-				text: data.text,
-				id: data.id,
-				createdAt: data.createdAt,
-				userId: data.userId,
-				type: 'another'
-			}])
+		if(!messageRef.current) return undefined
+		if(myRootStore.chatsStore.currentChat === -1) return undefined
+		setMessageList(myRootStore.chatsStore.chats[myRootStore.chatsStore.currentChat].messages)
+	}, [myRootStore.chatsStore.currentChat])
+	
+	useEffect(() => {
+		if(!messageRef.current) return undefined
+		messageRef.current.scroll(0,9999999999999999999999999999999999)
+	}, [myRootStore.chatsStore.chats])
 
-			console.log(messageList)
+	useEffect(() => {
+		socket.on('gettingMessage', data => {
+			myRootStore.chatsStore.addMessageInChat((data.chatId-1), data.message)
 		})
 
-		return ()=>{socket.off('1')}
+		return ()=>{socket.off('gettingMessage')}
 	}, [socket])
 
 	function handleClick(e: any) {
@@ -140,23 +139,24 @@ export default function ChatsPage({}: Props) {
 			}
 
 			await socket.emit('sendMessage', {
-				text: e.target.value.trim(),
+				content: e.target.value.trim(),
 				userToken: localStorage.getItem('token'),
-				chatId: 1
+				chatId: myRootStore.chatsStore.currentChat+1
 			})
 
 
 
-			await setMessageList(prevMessages => [...prevMessages, {
-				text: e.target.value.trim(),
-				id: 4,
-				createdAt: "yes",
-				userId: myUserData.id,
-				type: 'me'
-			}])
+			myRootStore.chatsStore.addMessageInChat((myRootStore.chatsStore.currentChat), {
+				content: e.target.value.trim(),
+				userId: (jwtDecode(localStorage.getItem('token') as string) as any).id
+			})
 
 			e.target.value = ''
 		}
+	}
+
+	function handleChangeChat(e: any){
+		myRootStore.chatsStore.setCurrentChat(+e.currentTarget.attributes['data-chat-id'].value)
 	}
 
 	return (
@@ -169,8 +169,18 @@ export default function ChatsPage({}: Props) {
 					</button>
 				</div>
 				<div className={cl["chatscontent__chats-list"]}>{
-					chatList.map((element) =>
-						<div key={element.id} className={clsx(cl["chat_block"],cl["block"])}>
+					chatList.map((element, index) =>
+						<div
+							key={index}
+							className={clsx(cl["chatblock"],cl["block"], cl[(()=>{
+								if(index === myRootStore.chatsStore.currentChat){
+									return 'chatblock-current'
+								}
+								return ''
+							})()])}
+							data-chat-id={index}
+							onClick={handleChangeChat}
+						>
 							<img src={vite} />
 							<div className={cl["infocolumn"]}>
 								<p className={cl["title"]}>{element.title}</p>
@@ -195,13 +205,16 @@ export default function ChatsPage({}: Props) {
 				</div>
 			</div>
 			<div className={cl["chatscontent__chatmessages"]}>
-				<div className={cl['messages']}>
-					{messageList.map((message, index) =>
-						<div className={clsx(cl[`messagewrapper`], message.userId === myUserData.id ? cl[`messagewrapper-me`] : cl[`messagewrapper-another`])} key={index}>
-							<span>{message.text}</span>
-						</div>
-					)}
-				</div>
+				{/* <div className={cl['messageswrapper']} ref={messageWrapperRef}> */}
+					<div className={cl['messages']} ref={messageRef}>
+						{messageList.map((message, index) =>
+							<div className={clsx(cl[`messagewrapper`], message.userId === myUserData.id ? cl[`messagewrapper-me`] : cl	[`messagewrapper-another`])}
+								key={index}						>
+								<span>{message.content}</span>
+							</div>
+						)}
+					</div>
+				{/* </div> */}
 				<div className={cl['inputmessage']}>
 					<input type="text" placeholder="Enter message..." onKeyDown={handleEnterMessage}/>
 				</div>
@@ -224,4 +237,4 @@ export default function ChatsPage({}: Props) {
 		</div>
 	</>
 	);
-}
+})

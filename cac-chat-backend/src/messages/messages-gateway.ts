@@ -4,11 +4,13 @@ import { Socket, Server } from "socket.io";
 import { MessagesService } from "./messages.service";
 import { CreateMessageDto } from "./dto/createMessage.dto";
 import { DeleteMessageDto } from "./dto/deleteMessage.dto";
+import { UsersService } from "src/users/users.service";
 
 @WebSocketGateway({cors: true})
 export class MessageGateway {
 	constructor(
-		private MessageService: MessagesService
+		private MessageService: MessagesService,
+		private UsersService: UsersService
 	) {}
 
 
@@ -18,7 +20,10 @@ export class MessageGateway {
 	async handleNewMessage(client: Socket, dto: CreateMessageDto){
 		const message = await this.MessageService.createMessage(dto)
 
-		client.broadcast.emit(""+dto.chatId, message)
+		client.broadcast.emit("gettingMessage", {
+			"message": message,
+			"chatId": dto.chatId
+		})
 
 		// this.server.emit(""+dto.chatId, message)
 	}
