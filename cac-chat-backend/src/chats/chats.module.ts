@@ -7,6 +7,7 @@ import { Chat } from './chats.model';
 import { UserChat } from './chat-user.model';
 import { JwtModule } from '@nestjs/jwt';
 import { Message } from 'src/messages/messages.model';
+import { ChatGateway } from './chat-gateway';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { Message } from 'src/messages/messages.model';
       }
     })
   ],
-  providers: [ChatsService],
+  providers: [ChatsService, ChatGateway],
   controllers: [ChatsController]
 })
 export class ChatsModule {}

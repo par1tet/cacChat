@@ -4,6 +4,7 @@ import { createUserDto } from './dto/createUser.dto';
 import { getUserDto } from './dto/getUser.dto';
 import { updateUserDto } from './dto/updateUser.dto';
 import { deleteUserDto } from './dto/deleteUser.dto';
+import { searchUserByNickname } from './dto/searchUserByNickname.dto';
 
 @Controller('users')
 export class UsersController {
@@ -32,5 +33,10 @@ export class UsersController {
     @Post('delete_user')
     deleteUser(@Body() userDto: deleteUserDto){
         return this.usersService.deleteUser(userDto)
+    }
+
+    @Post('search_user')
+    searchUser(@Body() dto: searchUserByNickname){
+        return this.usersService.searchUserByNickname(dto)
     }
 }

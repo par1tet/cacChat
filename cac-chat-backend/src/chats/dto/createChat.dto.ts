@@ -1,5 +1,4 @@
 export class CreateChatDto{
   readonly title: string;
-  readonly userToken: string;
-
+  readonly userToken: string
 }

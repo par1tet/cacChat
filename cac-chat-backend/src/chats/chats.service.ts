@@ -23,7 +23,7 @@ export class ChatsService {
 		private jwtService: JwtService
 	) {}
 
-	private async getUserId(token: string): Promise<number> {
+	async getUserId(token: string): Promise<number> {
 		try{
 			const payload = this.jwtService.verify(token, {
 				secret: process.env.PRIVATE_KEY

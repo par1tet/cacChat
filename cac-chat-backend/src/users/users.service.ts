@@ -4,9 +4,10 @@ import { User } from './users.model';
 import { createUserDto } from './dto/createUser.dto';
 import { getUserDto } from './dto/getUser.dto';
 import { updateUserDto } from './dto/updateUser.dto';
-import { where } from 'sequelize';
 import { deleteUserDto } from './dto/deleteUser.dto';
 import { getUserByNameAndPassword } from './dto/getUserByNameAndPassword.dto';
+import { searchUserByNickname } from './dto/searchUserByNickname.dto';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class UsersService {
@@ -61,5 +62,20 @@ export class UsersService {
         })
 
         return foundUser
+    }
+
+    async searchUserByNickname (dto: searchUserByNickname){
+        try{
+            const candidate = await this.userRepository.findAll({
+                where: {
+                    nickname: {
+                        [Op.iLike]: `%${dto.nickname}%`
+                    }
+                }
+            })
+            return candidate
+        } catch {
+            throw new HttpException("По данному запросу ничего не найдено", HttpStatus.NOT_FOUND)
+        }
     }
 }
