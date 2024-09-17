@@ -191,6 +191,8 @@
 }
 
 .messages {
+	scroll-behavior: smooth;
+	overflow-y: auto;
 	display: flex;
 	flex-direction: column;
 
@@ -206,26 +208,24 @@
 }
 
 .messagewrapper {
-	width: 400px;
-	white-space:normal;
+	max-width: 400px;
+	white-space: normal;
 	word-wrap: break-word;
-
-
+	display: inline-block;
+	width: fit-content;
 	background-color: #751175;
-	padding: 4px;
-
+	padding: 5px;
 	border-radius: 6px;
 }
 
 .messagewrapper-another {
-	width: 400px;
+	max-width: 400px;
 	white-space:normal;
 	word-wrap: break-word;
-
-
+	display: inline-block;
+	width: fit-content;
 	background-color: #1d1b1d;
-	padding: 4px;
-
+	padding: 5px;
 	border-radius: 6px;
 }
 

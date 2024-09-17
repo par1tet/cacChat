@@ -13,9 +13,10 @@
 .form_title{
 	padding-bottom: 10px;
 	font-size: 20px;
-	color: black;
+	color: white;
 }
 .form input{
+	color: black;
 	text-align: center;
 	padding: 15px;
 	border-radius: 10px;

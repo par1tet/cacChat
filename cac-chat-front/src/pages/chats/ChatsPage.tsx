@@ -10,6 +10,7 @@ import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import { serverLink } from "../../shared/api/serverLink";
 import { socket } from "../../shared/socket/socket";
+
 type Props = {};
 
 type tokenPayload = {
@@ -24,8 +25,18 @@ type chat = {
 }
 
 type message = {
+	id: number,
 	text: string,
-	type: string
+	createdAt: string,
+	userId: number,
+}
+
+type userData = {
+	email: string,
+	exp: number,
+	iat: number,
+	id: number,
+	nickname: string
 }
 
 export default function ChatsPage({}: Props) {
@@ -34,7 +45,9 @@ export default function ChatsPage({}: Props) {
 	const modalCreateWindowRef = useRef<HTMLDivElement>(null)
 	const [chatList, setChatList] = useState<chat[]>([])
 	const [messageList, setMessageList] = useState<message[]>([])
-	console.log('123123')
+	const MyToken: any = localStorage.getItem('token')
+	const myUserData: userData = jwtDecode(MyToken);
+
 
 	useEffect(() => {
 		if(!localStorage.getItem('token')){
@@ -44,7 +57,10 @@ export default function ChatsPage({}: Props) {
 		axios.post(serverLink('chats/list'), {
 			userToken: localStorage.getItem('token')
 		})
-		.then(r => setChatList(r.data))
+		.then(r => {
+			setChatList(r.data)
+			setMessageList(r.data[0].messages)
+		})
 
 		axios.post(serverLink('messages/get'), {
 			chatId: 1
@@ -61,6 +77,9 @@ export default function ChatsPage({}: Props) {
 		socket.on('1', data => {
 			setMessageList(prevMessages => [...prevMessages, {
 				text: data.text,
+				id: data.id,
+				createdAt: data.createdAt,
+				userId: data.userId,
 				type: 'another'
 			}])
 
@@ -126,8 +145,13 @@ export default function ChatsPage({}: Props) {
 				chatId: 1
 			})
 
+
+
 			await setMessageList(prevMessages => [...prevMessages, {
 				text: e.target.value.trim(),
+				id: 4,
+				createdAt: "yes",
+				userId: myUserData.id,
 				type: 'me'
 			}])
 
@@ -173,7 +197,7 @@ export default function ChatsPage({}: Props) {
 			<div className={cl["chatscontent__chatmessages"]}>
 				<div className={cl['messages']}>
 					{messageList.map((message, index) =>
-						<div className={clsx(cl[`messagewrapper`], cl[`messagewrapper-${message.type}`])} key={index}>
+						<div className={clsx(cl[`messagewrapper`], message.userId === myUserData.id ? cl[`messagewrapper-me`] : cl[`messagewrapper-another`])} key={index}>
 							<span>{message.text}</span>
 						</div>
 					)}
