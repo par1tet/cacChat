@@ -28,10 +28,19 @@ type tokenPayload = {
 export const ChatsPage = observer(({}: Props) => {
 	const myRootStore: rootStore = useStore()
 	const navigate = useNavigate()
+
 	const sideBarRef = useRef<HTMLDivElement>(null)
 	const modalCreateWindowRef = useRef<HTMLDivElement>(null)
+	const messageWrapperRef = useRef<HTMLDivElement>(null)
+	const messageRef = useRef<HTMLDivElement>(null)
+
 	const [chatList, setChatList] = useState<chat[]>(myRootStore.chatsStore.chats)
 	const [messageList, setMessageList] = useState<message[]>([])
+
+	useEffect(() => {
+		if(!messageRef.current) return undefined
+		messageRef.current.scroll(0,9999999999999999999999999999999999)
+	})
 
 	useEffect(() => {
 		if(!localStorage.getItem('token')){
@@ -55,15 +64,15 @@ export const ChatsPage = observer(({}: Props) => {
 	}, [])
 
 	useEffect(() => {
-		console.log(myRootStore.chatsStore.currentChat)
+		if(!messageRef.current) return undefined
 		if(myRootStore.chatsStore.currentChat === -1) return undefined
 		setMessageList(myRootStore.chatsStore.chats[myRootStore.chatsStore.currentChat].messages)
 	}, [myRootStore.chatsStore.currentChat])
-
+	
 	useEffect(() => {
-		console.log(myRootStore.chatsStore.currentChat)
-		if(myRootStore.chatsStore.currentChat === -1) return undefined
-		setMessageList(myRootStore.chatsStore.chats[myRootStore.chatsStore.currentChat].messages)
+		if(!messageRef.current) return undefined
+		messageRef.current.scroll(0,9999999999999999999999999999999999)
+		console.log('handle')
 	}, [myRootStore.chatsStore.chats])
 
 	useEffect(() => {
@@ -133,6 +142,10 @@ export const ChatsPage = observer(({}: Props) => {
 			myRootStore.chatsStore.addMessageInChat((myRootStore.chatsStore.currentChat), {
 				content: e.target.value.trim(),
 				userId: (jwtDecode(localStorage.getItem('token') as string) as any).id
+			}, ()=> {
+				if(!messageRef.current) return undefined
+				messageRef.current.scroll(0,9999999999999999999999999999999999)
+				console.log('rwaset')
 			})
 
 			e.target.value = ''
@@ -189,16 +202,18 @@ export const ChatsPage = observer(({}: Props) => {
 				</div>
 			</div>
 			<div className={cl["chatscontent__chatmessages"]}>
-				<div className={cl['messages']}>
-					{messageList.map((message, index) =>
-						<div
-							className={clsx(cl[`messagewrapper`],
-							cl[`messagewrapper-${'me'}`])}
-							key={index}						>
-							<span>{message.content}</span>
-						</div>
-					)}
-				</div>
+				{/* <div className={cl['messageswrapper']} ref={messageWrapperRef}> */}
+					<div className={cl['messages']} ref={messageRef}>
+						{messageList.map((message, index) =>
+							<div
+								className={clsx(cl[`messagewrapper`],
+								cl[`messagewrapper-${'me'}`])}
+								key={index}						>
+								<span>{message.content}</span>
+							</div>
+						)}
+					</div>
+				{/* </div> */}
 				<div className={cl['inputmessage']}>
 					<input type="text" placeholder="Enter message..." onKeyDown={handleEnterMessage}/>
 				</div>

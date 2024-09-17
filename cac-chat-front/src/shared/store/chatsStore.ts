@@ -26,7 +26,10 @@ export class chatsStore {
         this.currentChat = idChat
     }
 
-    addMessageInChat(chatId: number, message: message) {
+    addMessageInChat(chatId: number, message: message, effect?: () => any) {
         this.chats[chatId].messages.push(message)
+        if(effect){
+            effect()
+        }
     }
 }
