@@ -1,14 +1,6 @@
 import { makeAutoObservable } from "mobx"
-
-type message = {
-    content: string,
-    userId: number
-}
-
-type chat = {
-    title: string,
-    messages: message[]
-}
+import { chat } from "../types/chats"
+import { message } from "../types/chats"
 
 export class chatsStore {
     chats: chat[] = []
@@ -26,8 +18,20 @@ export class chatsStore {
         this.currentChat = idChat
     }
 
-    addMessageInChat(chatId: number, message: message, effect?: () => any) {
-        this.chats[chatId].messages.push(message)
+    addMessageInChat(chatId: number, message: {
+        userId: number,
+        content: string,
+        id?: number,
+        createdAt?: string
+    }, effect?: () => any) {
+        if(message.id === undefined){
+            message.id = this.chats[chatId].messages.length
+        }
+        if(message.createdAt === undefined){
+            message.createdAt = ''
+        }
+
+        this.chats[chatId].messages.push(message as any)
         if(effect){
             effect()
         }

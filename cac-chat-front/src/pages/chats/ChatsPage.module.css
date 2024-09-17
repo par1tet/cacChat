@@ -227,9 +227,8 @@
 	max-width: 400px;
 	white-space: normal;
 	word-wrap: break-word;
-	display: inline-block;
-	width: fit-content;
 	background-color: #751175;
+
 	padding: 4px;
 	margin-top: 4px;
 
@@ -240,10 +239,12 @@
 	max-width: 400px;
 	white-space:normal;
 	word-wrap: break-word;
-	display: inline-block;
-	width: fit-content;
+
 	background-color: #1d1b1d;
-	padding: 5px;
+
+	padding: 4px;
+	margin-top: 4px;
+
 	border-radius: 6px;
 }
 

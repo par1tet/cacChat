@@ -1,6 +1,8 @@
 export type message = {
-    content: string,
-    userId: number
+	id: number,
+	content: string,
+	createdAt: string,
+	userId: number,
 }
 
 export type chat = {
