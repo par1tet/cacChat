@@ -5,6 +5,7 @@ import {Socket, Server} from "socket.io"
 import { CreateChatDto } from "./dto/createChat.dto";
 import { DeleteChatDto } from "./dto/deleteChat.dto";
 import { AddUserToChatDto } from "./dto/addUserToChat.dto";
+import { SearchPrivateUserChatDto } from "./dto/searchPrivateUserChat.dto";
 
 @WebSocketGateway({cors: true})
 export class ChatGateway {
@@ -15,7 +16,7 @@ export class ChatGateway {
   @WebSocketServer() server: Server
 
   @SubscribeMessage('searchChatPrivate')
-  async handleSearchNewChat (client: Socket, dto: any){
+  async handleSearchNewChat (client: Socket, dto: SearchPrivateUserChatDto){
     const chats = await this.ChatService.searchPrivateUserChat(dto)
     return chats
   }

@@ -13,6 +13,7 @@ import { Message } from 'src/messages/messages.model';
 import { getChatsWithMessagesForUserDto } from './dto/getChatsWithMessagesForUser.dto';
 import { Sequelize } from 'sequelize-typescript';
 import { Op } from 'sequelize';
+import { SearchPrivateUserChatDto } from './dto/searchPrivateUserChat.dto';
 
 @Injectable()
 export class ChatsService {
@@ -72,6 +73,7 @@ export class ChatsService {
 	}
 
 	async searchPrivateUserChat(dto: any) {
+		console.log(dto)
 		try {
 			const chats = await Chat.findAll({
 				attributes: ['id', 'title', 'createdAt'],
