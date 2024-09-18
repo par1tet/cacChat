@@ -14,23 +14,29 @@ export class ChatGateway {
 
   @WebSocketServer() server: Server
 
+  @SubscribeMessage('searchChatPrivate')
+  async handleSearchNewChat (client: Socket, dto: any){
+    const chats = await this.ChatService.searchPrivateUserChat(dto)
+    return chats
+  }
+
   @SubscribeMessage('createChat')
   async handleNewChat (client: Socket, dto: CreateChatDto){
-    const userId = await this.ChatService.getUserId(dto.userToken)
     const chat = await this.ChatService.createChat(dto)
-    client.broadcast.emit("userIn", chat)
+    this.server.emit("userIn", chat)
+    return chat
   }
 
   @SubscribeMessage('deleteChat')
   async handleDeleteChat (client: Socket, dto: DeleteChatDto){
     await this.ChatService.deleteChat(dto)
-    client.broadcast.emit('delete', "delete")
+    this.server.emit('delete', "delete")
   }
 
   @SubscribeMessage('addUserToChat')
   async handleAddUserToChat (client: Socket, dto: AddUserToChatDto){
     const invite = await this.ChatService.addUserToChat(dto)
-    console.log(invite)
-    client.broadcast.emit("user:"+invite, "invite")
+    console.log(invite.dataValues.id)
+    this.server.emit("user", dto.userId)
   }
 }

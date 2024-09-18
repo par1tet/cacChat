@@ -9,9 +9,10 @@ import { UserChat } from './chat-user.model';
 import { FindAllUserChatsDto } from './dto/findAllUserChats.dto';
 import { FindAllChatUsers } from './dto/findAllChatUsers.dto';
 import { JwtService } from '@nestjs/jwt';
-import { findAllChatMessages } from './dto/findAllChatMessage.dto';
 import { Message } from 'src/messages/messages.model';
 import { getChatsWithMessagesForUserDto } from './dto/getChatsWithMessagesForUser.dto';
+import { Sequelize } from 'sequelize-typescript';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class ChatsService {
@@ -37,11 +38,15 @@ export class ChatsService {
 	}
 
 	async createChat(dto: CreateChatDto) {
-		const userId = await this.getUserId(dto.userToken)
-		console.log(userId)
-		const candidate = await this.chatRepository.create({userId: userId, title: dto.title});
-		await this.addUserToChat({userId: userId, chatId: candidate.id})
-		return candidate;
+		try {
+			const userId = await this.getUserId(dto.userToken);
+			const candidate = await this.chatRepository.create({ userId, title: dto.title });
+			await this.addUserToChat({ userId, chatId: candidate.id });
+			return candidate;
+		} catch (error) {
+			console.error('Error creating chat:', error);
+			throw new HttpException('Could not create chat', HttpStatus.BAD_REQUEST); 
+		}
 	}
 
 	async deleteChat(dto: DeleteChatDto) {
@@ -66,6 +71,39 @@ export class ChatsService {
 		return await this.userChatRepository.findAll({where: {chatId: dto.chatId}})
 	}
 
+	async searchPrivateUserChat(dto: any) {
+		try {
+			const chats = await Chat.findAll({
+				attributes: ['id', 'title', 'createdAt'],
+				include: [
+					{
+						model: User,
+						as: 'users',
+						attributes: [],
+						through: { attributes: [] },
+						where: {
+							id: {
+								[Op.in]: dto
+							}
+						},
+						duplicating: false
+					}
+				],
+				group: ['Chat.id'],
+				having: Sequelize.literal(
+					`COUNT(DISTINCT "users"."id") = 2 AND 
+					COUNT(DISTINCT CASE WHEN "users"."id" IN (${dto[0]}, ${dto[1]}) THEN "users"."id" END) = 2`
+				)
+			});
+	
+			return chats;
+		} catch (e) {
+			console.log(e);
+			throw new HttpException('Такого пользователя не существует', HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+
 	async findAllUserChats(dto: FindAllUserChatsDto) {
 		try {
 			const userId = await this.getUserId(dto.userToken);
@@ -87,21 +125,10 @@ export class ChatsService {
 					}
 				],
 			});
-
 			return chats;
 		} catch (e) {
 			console.log(e)
 			throw new HttpException('Такого пользователя не существует', HttpStatus.BAD_REQUEST);
-		}
-	}
-
-
-	async findAllChatMessages(dto: findAllChatMessages){
-		try{
-			const messages = await this.messageRepository.findAll({where: {chatId: dto.chatId}})
-			return messages
-		}catch(e){
-			throw new HttpException("Такого чата не существует", HttpStatus.BAD_REQUEST)
 		}
 	}
 

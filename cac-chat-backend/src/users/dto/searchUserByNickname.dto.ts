@@ -1,3 +1,4 @@
 export class searchUserByNickname{
-  readonly nickname: string
+  readonly nickname: string;
+  readonly exception: number;
 }
