@@ -42,28 +42,38 @@ export const ChatsPage = observer(({}: Props) => {
 
 	const [chatList, setChatList] = useState<chat[]>(myRootStore.chatsStore.chats)
 	const [messageList, setMessageList] = useState<message[]>([])
+	const [searchList, setSearchList] = useState<userData[]>()
 
 	useEffect(() => {
 		if(!messageRef.current) return undefined
 		messageRef.current.scroll(0,9999999999999999999999999999999999)
 	})
 
+	const updateChatList = () => {
+		axios.post(serverLink('chats/list'), {
+			userToken: localStorage.getItem('token')
+		})
+		.then(r => setChatList(r.data))
+	}
+
+	const getChatWithMessagesFromUser = () => {
+		axios.post(serverLink('chats/get_chats_with_messages_for_user'), {
+			userToken: localStorage.getItem('token')
+		})
+		.then(r => {
+			console.log(r.data)
+			setChatList(r.data)
+			myRootStore.chatsStore.setChats(r.data)
+		})
+	}
+
 	useEffect(() => {
 		if(!localStorage.getItem('token')){
 			navigate('/')
 		}else{
-			axios.post(serverLink('chats/list'), {
-				userToken: localStorage.getItem('token')
-			})
-			.then(r => setChatList(r.data))
-	
-			axios.post(serverLink('chats/get_chats_with_messages_for_user'), {
-				userToken: localStorage.getItem('token')
-			})
-			.then(r => {
-				console.log(r.data)
-				myRootStore.chatsStore.setChats(r.data)
-			})
+			/* эти 2 фукнкции делают одно и тоже (почти) */
+			updateChatList()
+			getChatWithMessagesFromUser()
 
 			socket.connect()
 		}
@@ -84,8 +94,17 @@ export const ChatsPage = observer(({}: Props) => {
 		socket.on('gettingMessage', data => {
 			myRootStore.chatsStore.addMessageInChat((data.chatId-1), data.message)
 		})
+		socket.on('user', data => {
+			if(myUserData.id == data){
+				updateChatList()
+				getChatWithMessagesFromUser()
+			}
+		})
 
-		return ()=>{socket.off('gettingMessage')}
+		return ()=>{
+			socket.off('userIn')
+			socket.off('gettingMessage')
+	}
 	}, [socket])
 
 	function handleClick(e: any) {
@@ -159,36 +178,95 @@ export const ChatsPage = observer(({}: Props) => {
 		myRootStore.chatsStore.setCurrentChat(+e.currentTarget.attributes['data-chat-id'].value)
 	}
 
+	const handleSearchEnter = async (e: any)	=> {
+		axios.post(serverLink('users/search_user'), {
+			"nickname": e.target.value,
+			"userId": myUserData.id
+		})
+		.then(r => {
+			setSearchList(r.data)
+		})
+	}
+
+	const handleBlur = () => {
+		setTimeout(() => setSearchList(undefined), 300);
+	}
+
+	const handleSearchChat = async (element: any) => {
+    let arr: any[] = [];
+		if (myUserData.id != element.id){
+			await socket.emit('searchChatPrivate', [myUserData.id, element.id], (r: any) => {
+        console.log(r);
+        arr = r;
+
+        if (arr.length == 0) {
+            socket.emit('createChat', {
+                title: element.nickname,
+                userToken: localStorage.getItem('token'),
+            }, async (r: any) => {
+                updateChatList();
+                getChatWithMessagesFromUser();
+
+                socket.emit('addUserToChat', {
+                    userId: element.id,
+                    chatId: r.id,
+                });
+            });
+				}else{
+					/* мне тут нужно по сути перейти на чат у которого индекс в бд  r[0].id */
+				}
+    });
+		}
+};
+
+
 	return (
 	<>
 		<div className={cl["chatscontent"]}>
-			<div className={cl["chatscontent__chats"]}>
+			<div className={cl["chatscontent__chats"]} onBlur={handleBlur}>
 				<div className={cl["chatscontent__chats-manage"]}>
 					<button onClick={handleClick}>
 						<img src={fiolBurger} alt="burger" draggable={false}/>
 					</button>
+					<input type="text" className={cl["chatscontent__chat-search"]} onChange={handleSearchEnter}  />
 				</div>
-				<div className={cl["chatscontent__chats-list"]}>{
-					chatList.map((element, index) =>
-						<div
-							key={index}
-							className={clsx(cl["chatblock"],cl["block"], cl[(()=>{
-								if(index === myRootStore.chatsStore.currentChat){
-									return 'chatblock-current'
-								}
-								return ''
-							})()])}
-							data-chat-id={index}
-							onClick={handleChangeChat}
-						>
-							<img src={vite} />
-							<div className={cl["infocolumn"]}>
-								<p className={cl["title"]}>{element.title}</p>
-								<p className={cl["lastmessage"]}>hello world</p>
+				{
+					searchList ?
+					<div className={cl["searchblock_list"]}>
+						{
+							searchList.map((element, index) => 
+								<button key={element.id} className={cl["searchblock_list-button"]} onClick={() => {handleSearchChat(element)}}>
+									<p className={cl["searchblock_list-item"]}>
+										{element.nickname}
+									</p>
+								</button>
+							)
+						}
+					</div> 
+					:
+					<div className={cl["chatscontent__chats-list"]}>{
+						chatList.map((element, index) =>
+							<div
+								key={index}
+								className={clsx(cl["chatblock"],cl["block"], cl[(()=>{
+									if(index === myRootStore.chatsStore.currentChat){
+										return 'chatblock-current'
+									}
+									return ''
+								})()])}
+								/* по сути нада поменять на element.id */
+								data-chat-id={index}
+								onClick={handleChangeChat}
+							>
+								<img src={vite} />
+								<div className={cl["infocolumn"]}>
+									<p className={cl["title"]}>{element.title}</p>
+									<p className={cl["lastmessage"]}>hello world</p>
+								</div>
 							</div>
-						</div>
-					)
-				}</div>
+						)
+					}</div>
+				}
 				<div className={cl["chatscontent__chats-sidebar"]} ref={sideBarRef}>
 					<div className={cl["chatscontent__chats-sidebar-manage"]}>
 						<button onClick={handleClickClose}>
