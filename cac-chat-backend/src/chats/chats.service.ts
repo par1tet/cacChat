@@ -10,10 +10,8 @@ import { FindAllUserChatsDto } from './dto/findAllUserChats.dto';
 import { FindAllChatUsers } from './dto/findAllChatUsers.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Message } from 'src/messages/messages.model';
-import { getChatsWithMessagesForUserDto } from './dto/getChatsWithMessagesForUser.dto';
 import { Sequelize } from 'sequelize-typescript';
 import { Op } from 'sequelize';
-import { SearchPrivateUserChatDto } from './dto/searchPrivateUserChat.dto';
 
 @Injectable()
 export class ChatsService {
@@ -132,9 +130,5 @@ export class ChatsService {
 			console.log(e)
 			throw new HttpException('Такого пользователя не существует', HttpStatus.BAD_REQUEST);
 		}
-	}
-
-	async getChatsWithMessagesForUser(dto: getChatsWithMessagesForUserDto) {
-		return await this.findAllUserChats(dto)
 	}
 }

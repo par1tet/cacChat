@@ -54,8 +54,8 @@
 
 .chatscontent__chats-list {
 	display: flex;
-
 	flex-direction: column;
+	gap: 8px;
 }
 
 .chatscontent__chats-manage > button {
@@ -156,7 +156,7 @@
 
 	background: rgba(46,44,46,1);
 
-	border: 1px solid rgb(36, 36, 36);
+	border-radius: 8px;
 	transition: 200ms;
 
 	cursor: pointer;
@@ -249,19 +249,24 @@
 	overflow-y: auto;
 }
 
-.messagewrapper {
+.messagewrapper{
 	max-width: 400px;
+}
+
+.message {
+	width: fit-content;
+  height: fit-content;
 	white-space: normal;
 	word-wrap: break-word;
 	background-color: #751175;
 
-	padding: 4px;
+	padding: 6px;
 	margin-top: 4px;
 
 	border-radius: 6px;
 }
 
-.messagewrapper-another {
+.message-another {
 	max-width: 400px;
 	white-space:normal;
 	word-wrap: break-word;

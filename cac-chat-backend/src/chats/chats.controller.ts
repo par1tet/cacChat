@@ -5,7 +5,6 @@ import { DeleteChatDto } from './dto/deleteChat.dto';
 import { AddUserToChatDto } from './dto/addUserToChat.dto';
 import { FindAllChatUsers } from './dto/findAllChatUsers.dto';
 import { FindAllUserChatsDto } from './dto/findAllUserChats.dto';
-import { getChatsWithMessagesForUserDto } from './dto/getChatsWithMessagesForUser.dto';
 
 @Controller('chats')
 export class ChatsController {
@@ -36,10 +35,5 @@ export class ChatsController {
   @Post("/list")
   getChats(@Body() dto: FindAllUserChatsDto){
     return this.ChatService.findAllUserChats(dto)
-  }
-
-  @Post("/get_chats_with_messages_for_user")
-  getChatsWithMessagesForUser(@Body() dto: getChatsWithMessagesForUserDto){
-    return this.ChatService.getChatsWithMessagesForUser(dto)
   }
 }

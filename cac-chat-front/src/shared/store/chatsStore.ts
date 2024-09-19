@@ -24,14 +24,16 @@ export class chatsStore {
         id?: number,
         createdAt?: string
     }, effect?: () => any) {
+        console.log(message)
         if(message.id === undefined){
-            message.id = this.chats[chatId].messages.length
+            const candidate = this.chats.filter(function(item) {return item.id === chatId})[0].messages
+            message.id = candidate.length
         }
         if(message.createdAt === undefined){
             message.createdAt = ''
         }
 
-        this.chats[chatId].messages.push(message as any)
+        this.chats.filter(function(item) {return item.id === chatId})[0].messages.push(message as any)
         if(effect){
             effect()
         }
