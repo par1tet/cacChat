@@ -14,6 +14,14 @@ export class chatsStore {
         this.chats = newValue
     }
 
+    createChat(title: string){
+        this.chats.push({
+            "id": this.chats.length,
+            "title":title,
+            "messages": []
+        })
+    }
+
     setCurrentChat(idChat: number) {
         this.currentChat = idChat
     }
@@ -26,14 +34,13 @@ export class chatsStore {
     }, effect?: () => any) {
         console.log(message)
         if(message.id === undefined){
-            const candidate = this.chats.filter(function(item) {return item.id === chatId})[0].messages
-            message.id = candidate.length
+            const candidate = this.chats.find(chat => chat.id === chatId)?.messages
+            if(candidate) message.id = candidate.length
         }
         if(message.createdAt === undefined){
             message.createdAt = ''
         }
-
-        this.chats.filter(function(item) {return item.id === chatId})[0].messages.push(message as any)
+        this.chats.find(chat => chat.id === chatId)?.messages.push(message as any)
         if(effect){
             effect()
         }

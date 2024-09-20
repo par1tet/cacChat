@@ -23,6 +23,7 @@ export class MessageGateway {
 		client.broadcast.emit("gettingMessage", {
 			"message": message,
 		})
+		console.log(123)
 
 		// this.server.emit(""+dto.chatId, message)
 	}

@@ -3,7 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import { ChatsPage } from '../../pages/chats/ChatsPage.tsx';
 import SignInPage from '../../pages/sign-in/SignInPage.tsx';
 import SignUpPage from '../../pages/sign-up/SignUpPage.tsx';
-import MainPage from '../test-page/MainPage.tsx';
+import MainPage from '../main-page/MainPage.tsx';
 import { createContext } from "react";
 import { rootStore } from "../../shared/store/rootStore.ts";
 
