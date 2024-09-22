@@ -36,22 +36,6 @@
 	padding: 10px;
 }
 
-.searchblock_list{
-	display: flex;
-	flex-direction: column;
-	gap: 2px;
-}
-
-.searchblock_list-button{
-	padding: 10px;
-	background: 0;
-	border: 0;
-}
-
-.searchblock_list-item{
-	font-size: 17px;
-}
-
 .chatscontent__chats-list {
 	display: flex;
 	flex-direction: column;

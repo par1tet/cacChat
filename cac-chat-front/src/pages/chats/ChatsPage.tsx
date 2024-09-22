@@ -17,6 +17,7 @@ import vite from "/vite.svg";
 import { toJS } from "mobx";
 import { MessageList } from "./components/MessageList";
 import { SideBarChats } from "./components/SideBarChats";
+import { SearchBlock } from "./components/SearchBlock";
 
 type Props = {};
 
@@ -129,24 +130,24 @@ export const ChatsPage = observer(({}: Props) => {
 		}
 	}
 
-	const handleSearchChat = async (element: any) => {
+	const handleSearchChat = async (e: any) => {
 		/*
 			Функция которая ищет пользователей
 		*/
 		let arr: any[] = [];
 
-		if (myUserData.id != element.id) {
-			await socket.emit("searchChatPrivate",[myUserData.id, element.id], (r: any) => {
+		if (myUserData.id != e.id) {
+			await socket.emit("searchChatPrivate",[myUserData.id, e.id], (r: any) => {
 				arr = r;
 
 				if (arr.length == 0) {
 					socket.emit("createChat",{
-						title: element.nickname,
+						title: e.nickname,
 						userToken: localStorage.getItem("token"),
 					}, async (r: any) => {
 						updateChatList();
 							socket.emit("addUserToChat", {
-								userId: element.id,
+								userId: e.id,
 								chatId: r.id,
 							});
 						}
@@ -233,21 +234,10 @@ export const ChatsPage = observer(({}: Props) => {
 						/>
 					</div>
 					{searchList ? (
-					<div className={cl["searchblock_list"]}>
-						{searchList.map(element =>
-							<button
-								key={element.id}
-								className={cl["searchblock_list-button"]}
-								onClick={() => {
-									handleSearchChat(element);
-								}}
-							>
-								<p className={cl["searchblock_list-item"]}>
-									{element.nickname}
-								</p>
-							</button>
-						)}
-					</div>
+						<SearchBlock
+							searchList={searchList}
+							handleSearchChat={handleSearchChat}
+						></SearchBlock>
 					) : (
 					<div className={cl["chatscontent__chats-list"]}>
 						{myRootStore.chatsStore.chats.map(chat =>
