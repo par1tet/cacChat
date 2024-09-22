@@ -13,11 +13,11 @@ import fiolBack from "/fiol_back.png";
 import fiolBurger from "/fiol_burger.png";
 import vite from "/vite.svg";
 // import { toJS } from "mobx";
-// import { chat, message } from "../../shared/types/chats";
-import { toJS } from "mobx";
+// import { chat, message } from "../../shared/types/chats"
 import { MessageList } from "./components/MessageList";
 import { SideBarChats } from "./components/SideBarChats";
 import { SearchBlock } from "./components/SearchBlock";
+import { ChatsBlock } from "./components/ChatsBlock";
 
 type Props = {};
 
@@ -98,37 +98,6 @@ export const ChatsPage = observer(({}: Props) => {
 	};
 
 	// HANDLER FUNCTIONS
-
-	async function handleEnterMessage(e: any) {
-		/*
-			Функция, которая срабатывает при отправлении сообщения.
-			Работает при нажатии на Enter, когда выбрано поле ввода.
-			Если строка пустая, то не срабатывает.
-			Отправляет сообщение которое обрезано слева и справо пробелами
-			через String.trim.
-		*/
-		if (e.key === "Enter") {
-			if (e.target.value.trim() === "") {
-				return undefined;
-			}
-
-			await socket.emit("sendMessage", {
-				content: e.target.value.trim(),
-				userToken: localStorage.getItem("token"),
-				chatId: myRootStore.chatsStore.currentChat,
-			});
-
-			myRootStore.chatsStore.addMessageInChat(
-				myRootStore.chatsStore.currentChat,{
-					content: e.target.value.trim(),
-					userId: (jwtDecode(localStorage.getItem("token") as string) as any)
-					.id,
-				}
-			);
-
-			e.target.value = "";
-		}
-	}
 
 	const handleSearchChat = async (e: any) => {
 		/*
@@ -237,44 +206,12 @@ export const ChatsPage = observer(({}: Props) => {
 						<SearchBlock
 							searchList={searchList}
 							handleSearchChat={handleSearchChat}
-						></SearchBlock>
+						/>
 					) : (
-					<div className={cl["chatscontent__chats-list"]}>
-						{myRootStore.chatsStore.chats.map(chat =>
-							<div
-								key={chat.id}
-								className={clsx(cl["chatblock"],cl["block"],
-								cl[
-									(() => {
-									if (chat.id === myRootStore.chatsStore.currentChat) {
-										return "chatblock-current";
-									}
-									return "";
-									})()
-								]
-								)}
-								data-chat-id={chat.id}
-								onClick={handleChangeChat}
-							>
-								<img src={vite} />
-								<div className={cl["infocolumn"]}>
-								<div className={cl["title"]}>
-									<span>
-										{chat.title}
-									</span>
-								</div>
-								<p className={cl["lastmessage"]}>
-									{(()=>{
-										if(chat.messages.length === 0){
-											return null
-										}
-										return chat.messages[chat.messages.length - 1].content
-									})()}
-								</p>
-								</div>
-							</div>
-						)}
-					</div>
+						<ChatsBlock
+							store={myRootStore}
+							handleChangeChat={handleChangeChat}
+						/>
 					)}
 					<SideBarChats
 						actions={[
@@ -291,7 +228,6 @@ export const ChatsPage = observer(({}: Props) => {
 					ref={messageRef}
 					store={myRootStore}
 					userData={myUserData}
-					handleEnterMessage={handleEnterMessage}
 				></MessageList>
 			</div>
 			<div className={cl["modalCreatechat"]} ref={modalCreateWindowRef}>
