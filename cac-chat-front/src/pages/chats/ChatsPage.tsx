@@ -13,8 +13,9 @@ import fiolBack from "/fiol_back.png";
 import fiolBurger from "/fiol_burger.png";
 import vite from "/vite.svg";
 // import { toJS } from "mobx";
-import { chat, message } from "../../shared/types/chats";
+// import { chat, message } from "../../shared/types/chats";
 import { toJS } from "mobx";
+import { MessageList } from "./components/MessageList";
 
 type Props = {};
 
@@ -81,6 +82,8 @@ export const ChatsPage = observer(({}: Props) => {
 		};
 	}, [socket]);
 
+	// FUNCTIONS
+
 	function updateChatList() {
 		axios.post(serverLink("chats/list"), {
 			userToken: localStorage.getItem("token"),
@@ -90,10 +93,68 @@ export const ChatsPage = observer(({}: Props) => {
 		});
 	};
 
-	function handleClick(e: any) {
-		if (!sideBarRef.current) return undefined;
-		sideBarRef.current.style.transform = "matrix(1, 0, 0, 1, 0, 0)";
+	// HANDLER FUNCTIONS
+
+	async function handleEnterMessage(e: any) {
+		/*
+			Функция, которая срабатывает при отправлении сообщения.
+			Работает при нажатии на Enter, когда выбрано поле ввода.
+			Если строка пустая, то не срабатывает.
+			Отправляет сообщение которое обрезано слева и справо пробелами
+			через String.trim.
+		*/
+		if (e.key === "Enter") {
+			if (e.target.value.trim() === "") {
+				return undefined;
+			}
+
+			await socket.emit("sendMessage", {
+				content: e.target.value.trim(),
+				userToken: localStorage.getItem("token"),
+				chatId: myRootStore.chatsStore.currentChat,
+			});
+
+			myRootStore.chatsStore.addMessageInChat(
+				myRootStore.chatsStore.currentChat,{
+					content: e.target.value.trim(),
+					userId: (jwtDecode(localStorage.getItem("token") as string) as any)
+					.id,
+				}
+			);
+
+			e.target.value = "";
+		}
 	}
+
+	const handleSearchChat = async (element: any) => {
+		/*
+			Функция которая ищет пользователей
+		*/
+		let arr: any[] = [];
+
+		if (myUserData.id != element.id) {
+			await socket.emit("searchChatPrivate",[myUserData.id, element.id], (r: any) => {
+				arr = r;
+
+				if (arr.length == 0) {
+					socket.emit("createChat",{
+						title: element.nickname,
+						userToken: localStorage.getItem("token"),
+					}, async (r: any) => {
+						updateChatList();
+							socket.emit("addUserToChat", {
+								userId: element.id,
+								chatId: r.id,
+							});
+						}
+					);
+				}else{
+					myRootStore.chatsStore.setCurrentChat(r[0].id);
+				}
+				}
+			);
+		}
+	};
 
 	function handleClickClose(e: any) {
 		if (!sideBarRef.current) return undefined;
@@ -142,36 +203,8 @@ export const ChatsPage = observer(({}: Props) => {
 		titleChat.value = "";
 	}
 
-	async function handleEnterMessage(e: any) {
-		if (e.key === "Enter") {
-			if (e.target.value.trim() === "") {
-				return undefined;
-			}
-
-			await socket.emit("sendMessage", {
-				content: e.target.value.trim(),
-				userToken: localStorage.getItem("token"),
-				chatId: myRootStore.chatsStore.currentChat,
-			});
-
-			myRootStore.chatsStore.addMessageInChat(
-				myRootStore.chatsStore.currentChat,{
-					content: e.target.value.trim(),
-					userId: (jwtDecode(localStorage.getItem("token") as string) as any)
-					.id,
-				}
-			);
-
-			e.target.value = "";
-		}
-	}
-
 	function handleChangeChat(e: any) {
 		myRootStore.chatsStore.setCurrentChat(+e.currentTarget.attributes["data-chat-id"].value);
-
-		console.log(toJS(myRootStore.chatsStore.chats))
-		console.log(myRootStore.chatsStore.currentChat)
-		console.log(myRootStore.chatsStore.chats[myRootStore.chatsStore.currentChat])
 	}
 
 	const handleSearchEnter = async (e: any) => {
@@ -186,37 +219,13 @@ export const ChatsPage = observer(({}: Props) => {
 	};
 
 	const handleBlur = () => {
-		setTimeout(() => setSearchList(undefined), 300);
+		setSearchList(undefined)
 	};
 
-  /* console.log(myRootStore.chatsStore.chats[2].messages[myRootStore.chatsStore.chats[2].messages.length - 1].content) */
-
-	const handleSearchChat = async (element: any) => {
-		let arr: any[] = [];
-
-		if (myUserData.id != element.id) {
-			await socket.emit("searchChatPrivate",[myUserData.id, element.id], (r: any) => {
-				arr = r;
-
-				if (arr.length == 0) {
-					socket.emit("createChat",{
-						title: element.nickname,
-						userToken: localStorage.getItem("token"),
-					}, async (r: any) => {
-						updateChatList();
-							socket.emit("addUserToChat", {
-								userId: element.id,
-								chatId: r.id,
-							});
-						}
-					);
-				}else{
-					myRootStore.chatsStore.setCurrentChat(r[0].id);
-				}
-				}
-			);
-		}
-	};
+	function handleClick(e: any) {
+		if (!sideBarRef.current) return undefined;
+		sideBarRef.current.style.transform = "matrix(1, 0, 0, 1, 0, 0)";
+	}
 
 	return (
 		<>
@@ -302,35 +311,12 @@ export const ChatsPage = observer(({}: Props) => {
 						</div>
 					</div>
 				</div>
-				<div className={cl["chatscontent__chatmessages"]}>
-					<div className={cl["messages"]} ref={messageRef}>
-						{myRootStore.chatsStore.currentChat !== -1 &&
-							myRootStore.chatsStore.chats.find(chat =>
-								chat.id === myRootStore.chatsStore.currentChat
-							)?.messages.map((message, index) =>
-								<div className="messagewrapper">
-									<div
-										className={clsx(
-										cl[`message`],
-										message.userId === myUserData.id
-											? cl[`message-me`]
-											: cl[`message-another`]
-										)}
-										key={index}
-									>
-										{message.content}
-									</div>
-								</div>
-						)}
-					</div>
-					<div className={cl["inputmessage"]}>
-					<input
-						type="text"
-						placeholder="Enter message..."
-						onKeyDown={handleEnterMessage}
-					/>
-					</div>
-				</div>
+				<MessageList
+					ref={messageRef}
+					store={myRootStore}
+					userData={myUserData}
+					handleEnterMessage={handleEnterMessage}
+				></MessageList>
 			</div>
 			<div className={cl["modalCreatechat"]} ref={modalCreateWindowRef}>
 				<div className={cl["modalCreatechat__title"]}>
