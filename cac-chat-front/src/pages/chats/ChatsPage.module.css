@@ -72,74 +72,6 @@
 	border-radius: 6px;
 }
 
-.chatscontent__chats-sidebar-manage {
-	display: flex;
-
-	width: 100%;
-	height: 46px;
-
-	flex-direction: row;
-	justify-content: space-between;
-
-	align-items: center;
-
-	background-color: #252525;
-}
-
-.chatscontent__chats-sidebar-manage > span {
-	transform: translate(-50%);
-}
-
-.chatscontent__chats-sidebar-manage > button {
-	background-color: #00000000;
-
-	border: 0;
-	border-radius: 6px;
-
-	cursor: pointer;
-}
-
-.chatscontent__chats-sidebar-manage > button > img{
-	width: 40px;
-	border-radius: 6px;
-}
-
-.chatscontent__chats-sidebar-actions {
-	display: flex;
-
-	width: 100%;
-
-	background-color: #ad6868;
-}
-
-.chatscontent__chats-sidebar-actions > *{
-	height: 40px;
-	width: 100%;
-
-	background-color: #363636;
-
-	border: 0;
-
-	cursor: pointer;
-}
-
-.chatscontent__chats-sidebar {
-	display: flex;
-	position: absolute;
-
-	z-index: 2;
-
-	width: 100%;
-	height: 100%;
-
-	transform: translate(-100%, 0%);
-	transition: 300ms;
-
-	flex-direction: column;
-
-	background-color: #000000;
-}
-
 .chatblock{
 	display: flex;
 
@@ -163,13 +95,24 @@
 }
 
 .chatblock-current {
-	background: #870f92;
+	background: #7b0c85;
 }
 
 .chatblock-current:hover{
-	background: #870f92;
+	background: #7b0c85;
 }
 
+.chatblock-current .title{
+	background: #650b6d;
+}
+
+.chatblock-current .title > span{
+	color: #ea00ff;
+}
+
+.chatblock-current .lastmessage{
+	color: #ffffff;
+}
 
 .block img{
 	width: 80px;
@@ -186,27 +129,33 @@
 	gap: 6px;
 }
 
-.title{
-	color: #c225d6;
+.title {
+	color: #ffffff;
 
+	max-width: calc(100% - 92px);
+	box-sizing: border-box;
+	text-overflow: ellipsis;
+	
+	overflow: hidden;
 
-	background-color: #53125c;
+	background-color: #363636;
 	border-radius: 12px;
 
-	padding-left: 12px;
+	padding-left: 6px;
 
-	font-size: 1.25rem;
+	font-size: 1.4rem;
 }
 
 .lastmessage{
-	color: #c7c7c7;
+	color: #929292;
 
-	background-color: #494747;
-	border-radius: 12px;
+	max-width: calc(100% - 92px);
+	box-sizing: border-box;
+	text-overflow: ellipsis;
+	
+	overflow: hidden;
 
-	padding-left: 12px;
-
-	font-size: 1rem;
+	font-size: 0.9rem;
 }
 
 .modalCreatechat {

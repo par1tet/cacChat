@@ -36,6 +36,10 @@
 	word-wrap: break-word;
 	background-color: #751175;
 
+    max-width: 400px;
+	white-space:normal;
+	word-wrap: break-word;
+
 	padding: 6px;
 	margin-top: 4px;
 

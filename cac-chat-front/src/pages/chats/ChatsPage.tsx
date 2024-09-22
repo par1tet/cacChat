@@ -16,6 +16,7 @@ import vite from "/vite.svg";
 // import { chat, message } from "../../shared/types/chats";
 import { toJS } from "mobx";
 import { MessageList } from "./components/MessageList";
+import { SideBarChats } from "./components/SideBarChats";
 
 type Props = {};
 
@@ -44,10 +45,12 @@ export const ChatsPage = observer(({}: Props) => {
 
 	const [searchList, setSearchList] = useState<userData[]>();
 
-	useEffect(() => {
-		if (!messageRef.current) return undefined;
-		messageRef.current.scroll(0, 9999999999999999999999999999999999);
-	});
+	// USE EFFECTS
+
+	// useEffect(() => {
+	// 	if (!messageRef.current) return undefined;
+	// 	messageRef.current.scroll(0, 9999999999999999999999999999999999);
+	// });
 
 	useEffect(() => {
 		if (!messageRef.current) return undefined;
@@ -156,19 +159,7 @@ export const ChatsPage = observer(({}: Props) => {
 		}
 	};
 
-	function handleClickClose(e: any) {
-		if (!sideBarRef.current) return undefined;
-
-		console.log(jwtDecode(localStorage.getItem("token") as string));
-
-		const computedStylesSideBar = getComputedStyle(sideBarRef.current);
-		sideBarRef.current.style.transform = `matrix(1, 0, 0, 1, -${computedStylesSideBar.width.slice(
-			0,
-			-2
-		)}, 0)`;
-	}
-
-	function handleClickCloseModal(e: any) {
+	function handleClickToggleModal(e: any) {
 		if (!sideBarRef.current) return undefined;
 		if (!modalCreateWindowRef.current) return undefined;
 
@@ -277,39 +268,34 @@ export const ChatsPage = observer(({}: Props) => {
 							>
 								<img src={vite} />
 								<div className={cl["infocolumn"]}>
-								<p className={cl["title"]}>{chat.title}</p>
+								<div className={cl["title"]}>
+									<span>
+										{chat.title}
+									</span>
+								</div>
 								<p className={cl["lastmessage"]}>
-									{(
-									()=>{
+									{(()=>{
 										if(chat.messages.length === 0){
 											return null
 										}
 										return chat.messages[chat.messages.length - 1].content
-									}
-									)()}
+									})()}
 								</p>
 								</div>
 							</div>
 						)}
 					</div>
 					)}
-					<div className={cl["chatscontent__chats-sidebar"]} ref={sideBarRef}>
-						<div className={cl["chatscontent__chats-sidebar-manage"]}>
-							<button onClick={handleClickClose}>
-								<img src={fiolBack} alt="back" draggable={false} />
-							</button>
-							<span>{
-								(jwtDecode(localStorage.getItem("token") as string) as tokenPayload).nickname
-							}</span>
-
-							<div></div>
-						</div>
-						<div className={cl["chatscontent__chats-sidebar-actions"]}>
-							<button onClick={handleClickCloseModal}>
-								<span>Create chat</span>
-							</button>
-						</div>
-					</div>
+					<SideBarChats
+						actions={[
+							{
+								title: 'Create chat',
+								handleClickToggleModal: handleClickToggleModal
+							}
+						]}
+						userData={myUserData}
+						ref={sideBarRef}
+					></SideBarChats>
 				</div>
 				<MessageList
 					ref={messageRef}
@@ -320,7 +306,7 @@ export const ChatsPage = observer(({}: Props) => {
 			</div>
 			<div className={cl["modalCreatechat"]} ref={modalCreateWindowRef}>
 				<div className={cl["modalCreatechat__title"]}>
-					<button onClick={handleClickCloseModal}>
+					<button onClick={handleClickToggleModal}>
 						<img src={fiolBack} alt="fiolback" draggable={false} />
 					</button>
 				</div>
