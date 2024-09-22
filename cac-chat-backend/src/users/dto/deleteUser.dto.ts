@@ -1,3 +1,9 @@
+import { ApiProperty } from "@nestjs/swagger";
+
 export class deleteUserDto {
-    readonly email: string
+    @ApiProperty({
+        description: 'User id',
+        default: 1
+    })
+    readonly userId: number
 }

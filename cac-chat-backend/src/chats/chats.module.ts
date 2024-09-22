@@ -10,16 +10,16 @@ import { Message } from 'src/messages/messages.model';
 import { ChatGateway } from './chat-gateway';
 
 @Module({
-  imports: [
-    SequelizeModule.forFeature([User, Chat, UserChat, Message]),
-    JwtModule.register({
-      secret: process.env.PRIVATE_KEY || 'SEC',
-      signOptions: {
-        expiresIn: '24h'
-      }
-    })
-  ],
-  providers: [ChatsService, ChatGateway],
-  controllers: [ChatsController]
+    imports: [
+        SequelizeModule.forFeature([User, Chat, UserChat, Message]),
+        JwtModule.register({
+            secret: process.env.PRIVATE_KEY || 'SEC',
+            signOptions: {
+                expiresIn: '24h',
+            },
+        }),
+    ],
+    providers: [ChatsService, ChatGateway],
+    controllers: [ChatsController],
 })
 export class ChatsModule {}

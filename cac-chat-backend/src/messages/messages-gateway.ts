@@ -1,36 +1,37 @@
-import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
+import {
+  MessageBody,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from '@nestjs/websockets';
 
-import { Socket, Server } from "socket.io";
-import { MessagesService } from "./messages.service";
-import { CreateMessageDto } from "./dto/createMessage.dto";
-import { DeleteMessageDto } from "./dto/deleteMessage.dto";
-import { UsersService } from "src/users/users.service";
+import { Socket, Server } from 'socket.io';
+import { MessagesService } from './messages.service';
+import { CreateMessageDto } from './dto/createMessage.dto';
+import { DeleteMessageDto } from './dto/deleteMessage.dto';
+import { UsersService } from 'src/users/users.service';
 
-@WebSocketGateway({cors: true})
+@WebSocketGateway({ cors: true })
 export class MessageGateway {
-	constructor(
-		private MessageService: MessagesService,
-		private UsersService: UsersService
-	) {}
+    constructor(
+        private MessageService: MessagesService,
+        private UsersService: UsersService,
+    ) {}
 
+    @WebSocketServer() server: Server;
 
-	@WebSocketServer() server: Server
+    @SubscribeMessage('sendMessage')
+    async handleNewMessage(client: Socket, dto: CreateMessageDto) {
+        const message = await this.MessageService.createMessage(dto);
 
-	@SubscribeMessage('sendMessage')
-	async handleNewMessage(client: Socket, dto: CreateMessageDto){
-		const message = await this.MessageService.createMessage(dto)
+            client.broadcast.emit('gettingMessage', {
+                message: message,
+            });
+    }
 
-		client.broadcast.emit("gettingMessage", {
-			"message": message,
-		})
-		console.log(123)
-
-		// this.server.emit(""+dto.chatId, message)
-	}
-
-	@SubscribeMessage('deleteMessage')
-	async handleDeleteMessage(client: Socket, dto: DeleteMessageDto){
-		await this.MessageService.deleteMessage(dto)
-		this.server.emit(""+dto.chatId, dto)
-	}
+    @SubscribeMessage('deleteMessage')
+    async handleDeleteMessage(client: Socket, dto: DeleteMessageDto) {
+        await this.MessageService.deleteMessage(dto);
+        this.server.emit('' + dto.chatId, dto);
+    }
 }

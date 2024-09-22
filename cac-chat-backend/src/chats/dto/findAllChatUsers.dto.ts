@@ -1,3 +1,9 @@
+import { ApiProperty } from "@nestjs/swagger";
+
 export class FindAllChatUsers {
-  readonly chatId: number
+    @ApiProperty({
+        description: "Chat id",
+        default: 1
+    })
+    readonly chatId: number;
 }

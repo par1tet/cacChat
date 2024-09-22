@@ -14,7 +14,8 @@ import { Message } from 'src/messages/messages.model';
 		SequelizeModule.forFeature([
 			User,
 			Chat,
-			Message
+			Message,
+			UserChat
 		])
 	],
 	exports: [

@@ -9,17 +9,17 @@ import { UserChat } from 'src/chats/chat-user.model';
 import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports: [
-    SequelizeModule.forFeature([Message, UserChat]),
-    JwtModule.register({
-      secret: process.env.PRIVATE_KEY || 'SEC',
-      signOptions: {
-        expiresIn: '24h'
-      }
-    }),
-    UsersModule
-  ],
-  providers: [MessagesService, MessageGateway],
-  controllers: [MessagesController]
+    imports: [
+        SequelizeModule.forFeature([Message, UserChat]),
+        JwtModule.register({
+            secret: process.env.PRIVATE_KEY || 'SEC',
+            signOptions: {
+                expiresIn: '24h',
+            },
+        }),
+        UsersModule,
+    ],
+    providers: [MessagesService, MessageGateway],
+    controllers: [MessagesController],
 })
 export class MessagesModule {}
