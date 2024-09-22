@@ -35,9 +35,7 @@ export const MessageList = forwardRef(({store, userData, handleEnterMessage}: pr
                     type="text"
                     placeholder="Enter message..."
                     onKeyDown={handleEnterMessage}
-                    disabled={store.chatsStore.chats.find(chat =>
-                        chat.id === store.chatsStore.currentChat
-                    )?.messages.length ? false : true}
+                    disabled={store.chatsStore.currentChat === -1}
                 />
             </div>
         </div>
