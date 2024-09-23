@@ -33,13 +33,18 @@ export const MessageList = observer(forwardRef(({store, userData}: propsMessageL
 				chatId: store.chatsStore.currentChat,
 			});
 
-			store.chatsStore.addMessageInChat(
-				store.chatsStore.currentChat,{
+			new Promise((res)=>{
+                store.chatsStore.addMessageInChat(store.chatsStore.currentChat,{
 					content: e.target.value.trim(),
 					userId: userData
 					.id,
-				}
-			);
+				})
+
+                res('end')
+            })
+            .then(() => {
+                (ref as any).current.scroll(0,9999999999999999999999999999999999)
+            })
 
 			e.target.value = "";
 		}
