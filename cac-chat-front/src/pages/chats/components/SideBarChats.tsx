@@ -16,7 +16,7 @@ type propsSideBarChats = {
 export const SideBarChats = forwardRef(({userData, actions}: propsSideBarChats, sideBarRef: React.Ref<HTMLDivElement>) => {
     // HANDLER FUNCTIONS
 
-	function handleClickClose(e: any) {
+	function handleClickClose() {
 		if (!sideBarRef) return undefined;
 		if (!(sideBarRef as any).current) return undefined;
 

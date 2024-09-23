@@ -18,6 +18,7 @@ import { MessageList } from "./components/MessageList";
 import { SideBarChats } from "./components/SideBarChats";
 import { SearchBlock } from "./components/SearchBlock";
 import { ChatsBlock } from "./components/ChatsBlock";
+import { ModalCreateChat } from "./components/Modals/ModalCreateChat";
 
 type Props = {};
 
@@ -48,15 +49,10 @@ export const ChatsPage = observer(({}: Props) => {
 
 	// USE EFFECTS
 
-	// useEffect(() => {
-	// 	if (!messageRef.current) return undefined;
-	// 	messageRef.current.scroll(0, 9999999999999999999999999999999999);
-	// });
-
 	useEffect(() => {
 		if (!messageRef.current) return undefined;
 		messageRef.current.scroll(0, 9999999999999999999999999999999999);
-	}, [myRootStore.chatsStore.chats]);
+	}, [myRootStore.chatsStore.currentChat]);
 
 	useEffect(() => {
 		if (!localStorage.getItem("token")) {
@@ -139,29 +135,13 @@ export const ChatsPage = observer(({}: Props) => {
 			-2
 		)}, 0)`;
 
-		modalCreateWindowRef.current.classList.toggle(cl["modalCreatechat-show"]);
-	}
+		const computedStylesmodalCreateWindowRef = getComputedStyle(modalCreateWindowRef.current);
 
-	function handleClickCreateChat(e: any) {
-		if (!modalCreateWindowRef.current) return undefined;
-
-		const titleChat = document.querySelector<HTMLInputElement>("#titlechat");
-
-		if (!titleChat) return undefined;
-		if (titleChat.value.trim() === '') {
-			titleChat.value = "";
-			return undefined
+		if(computedStylesmodalCreateWindowRef.display === 'flex'){
+			modalCreateWindowRef.current.style.display = 'none'
+		}else{
+			modalCreateWindowRef.current.style.display = 'flex'
 		}
-
-		modalCreateWindowRef.current.classList.remove(cl["modalCreatechat-show"]);
-
-		axios.post(serverLink("chats/create"), {
-			userToken: localStorage.getItem("token"),
-			title: titleChat.value,
-		});
-		myRootStore.chatsStore.createChat(titleChat.value)
-
-		titleChat.value = "";
 	}
 
 	function handleChangeChat(e: any) {
@@ -230,21 +210,11 @@ export const ChatsPage = observer(({}: Props) => {
 					userData={myUserData}
 				></MessageList>
 			</div>
-			<div className={cl["modalCreatechat"]} ref={modalCreateWindowRef}>
-				<div className={cl["modalCreatechat__title"]}>
-					<button onClick={handleClickToggleModal}>
-						<img src={fiolBack} alt="fiolback" draggable={false} />
-					</button>
-				</div>
-				<div className={cl["modalCreatechat__inputs"]}>
-					<input type="text" placeholder="Title..." id="titlechat" />
-				</div>
-				<div className={cl["modalCreatechat__createbutton"]}>
-					<button onClick={handleClickCreateChat}>
-						<span>Create</span>
-					</button>
-				</div>
-			</div>
+			<ModalCreateChat
+				store={myRootStore}
+				handleClickToggleModal={handleClickToggleModal}
+				ref={modalCreateWindowRef}
+			/>
 		</>
 	);
 });
