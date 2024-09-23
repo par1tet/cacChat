@@ -13,3 +13,8 @@
 .searchblock_list-item{
 	font-size: 17px;
 }
+
+.searchblock_notfound {
+	margin: 0 auto;
+	margin-top: 10px;
+}

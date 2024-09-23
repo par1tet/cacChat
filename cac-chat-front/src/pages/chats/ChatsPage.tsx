@@ -45,7 +45,8 @@ export const ChatsPage = observer(({}: Props) => {
 	const modalCreateWindowRef = useRef<HTMLDivElement>(null);
 	const messageRef = useRef<HTMLDivElement>(null);
 
-	const [searchList, setSearchList] = useState<userData[]>();
+	const [searchList, setSearchList] = useState<userData[]>([]);
+	const [isSearch, setIsSearch] = useState<boolean>(false);
 
 	// USE EFFECTS
 
@@ -97,29 +98,29 @@ export const ChatsPage = observer(({}: Props) => {
 
 	const handleSearchChat = async (e: any) => {
 		/*
-			Функция которая ищет пользователей
+			Функция которая ищет чат
 		*/
 		let arr: any[] = [];
 
 		if (myUserData.id != e.id) {
 			await socket.emit("searchChatPrivate",[myUserData.id, e.id], (r: any) => {
-				arr = r;
+					arr = r;
 
-				if (arr.length == 0) {
-					socket.emit("createChat",{
-						title: e.nickname,
-						userToken: localStorage.getItem("token"),
-					}, async (r: any) => {
-						updateChatList();
-							socket.emit("addUserToChat", {
-								userId: e.id,
-								chatId: r.id,
-							});
-						}
-					);
-				}else{
-					myRootStore.chatsStore.setCurrentChat(r[0].id);
-				}
+					if (arr.length == 0) {
+						socket.emit("createChat",{
+							title: e.nickname,
+							userToken: localStorage.getItem("token"),
+						}, async (r: any) => {
+							updateChatList();
+								socket.emit("addUserToChat", {
+									userId: e.id,
+									chatId: r.id,
+								});
+							}
+						);
+					}else{
+						myRootStore.chatsStore.setCurrentChat(r[0].id);
+					}
 				}
 			);
 		}
@@ -149,19 +150,42 @@ export const ChatsPage = observer(({}: Props) => {
 	}
 
 	const handleSearchEnter = async (e: any) => {
-		axios
-			.post(serverLink("users/search_user"), {
-				nickname: e.target.value,
-				userId: myUserData.id,
-			})
-			.then((r) => {
-				setSearchList(r.data);
+		console.log('sadf')
+		setIsSearch(true)
+
+		if(e.target.value === ''){
+			return setSearchList([])
+		}
+
+		axios.post(serverLink("users/search_user"), {
+			nickname: e.target.value,
+			userId: myUserData.id,
+		})
+		.then((r) => {
+			setSearchList(r.data);
 		});
 	};
 
-	const handleBlur = () => {
-		setSearchList(undefined)
+	const handleSearchBlur = () => {
+		setSearchList([])
+		setIsSearch(false)
 	};
+
+	function handleSearchFocus(e: any){
+		setIsSearch(true)
+
+		if(e.target.value === ''){
+			return setSearchList([])
+		}
+
+		axios.post(serverLink("users/search_user"), {
+			nickname: e.target.value,
+			userId: myUserData.id,
+		})
+		.then((r) => {
+			setSearchList(r.data);
+		});
+	}
 
 	function handleClick(e: any) {
 		if (!sideBarRef.current) return undefined;
@@ -171,7 +195,7 @@ export const ChatsPage = observer(({}: Props) => {
 	return (
 		<>
 			<div className={cl["chatscontent"]}>
-				<div className={cl["chatscontent__chats"]} onBlur={handleBlur}>
+				<div className={cl["chatscontent__chats"]} onBlur={handleSearchBlur} onFocus={handleSearchFocus}>
 					<div className={cl["chatscontent__chats-manage"]}>
 						<button onClick={handleClick}>
 							<img src={fiolBurger} alt="burger" draggable={false} />
@@ -182,7 +206,7 @@ export const ChatsPage = observer(({}: Props) => {
 							onChange={handleSearchEnter}
 						/>
 					</div>
-					{searchList ? (
+					{searchList.length !== 0 || isSearch ? (
 						<SearchBlock
 							searchList={searchList}
 							handleSearchChat={handleSearchChat}

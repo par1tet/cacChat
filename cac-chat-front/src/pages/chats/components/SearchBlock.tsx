@@ -7,21 +7,30 @@ type propsSearchBlock = {
 }
 
 export const SearchBlock = ({searchList, handleSearchChat}: propsSearchBlock) => {
-    return (<>
-        <div className={cl["searchblock_list"]}>
-            {searchList.map(element =>
-                <button
-                    key={element.id}
-                    className={cl["searchblock_list-button"]}
-                    onClick={() => {
-                        handleSearchChat(element);
-                    }}
-                >
-                    <p className={cl["searchblock_list-item"]}>
-                        {element.nickname}
-                    </p>
-                </button>
-            )}
-        </div>
-    </>)
+
+    if(searchList.length === 0) {
+        return (<>
+            <div className={cl["searchblock_notfound"]}>
+                Ничего не найдено
+            </div>
+        </>)
+    }else{
+        return (<>
+            <div className={cl["searchblock_list"]}>
+                {searchList.map(element =>
+                    <button
+                        key={element.id}
+                        className={cl["searchblock_list-button"]}
+                        onClick={() => {
+                            handleSearchChat(element);
+                        }}
+                    >
+                        <p className={cl["searchblock_list-item"]}>
+                            {element.nickname}
+                        </p>
+                    </button>
+                )}
+            </div>
+        </>)
+    }
 }
