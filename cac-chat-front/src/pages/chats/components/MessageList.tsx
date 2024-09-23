@@ -34,11 +34,11 @@ export const MessageList = observer(forwardRef(({store, userData}: propsMessageL
 			});
 
 			new Promise((res)=>{
-                store.chatsStore.addMessageInChat(store.chatsStore.currentChat,{
+                /* store.chatsStore.addMessageInChat(store.chatsStore.currentChat,{
 					content: e.target.value.trim(),
 					userId: userData
 					.id,
-				})
+				}) */
 
                 res('end')
             })

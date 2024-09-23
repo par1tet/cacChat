@@ -48,19 +48,21 @@ export const ChatsPage = observer(({}) => {
 		} else {
 			updateChatList();
 			socket.connect();
+
+			myRootStore.chatsStore.chats.forEach(chat => {
+				socket.emit('joinChat', { chatId: chat.id });
+			});
 		}
 	}, []);
 
 	useEffect(() => {
-		socket.on("gettingMessage", (data) => {
-			myRootStore.chatsStore.addMessageInChat(
-				data.message.chatId,
-				data.message
-			);
+		socket.on("newMessage", (data) => {
+		const chatId = data.message.chatId;
+		myRootStore.chatsStore.addMessageInChat(chatId, data.message);
 		});
-
+	
 		return () => {
-			socket.off("gettingMessage");
+			socket.off("newMessage");
 		};
 	}, [socket]);
 
@@ -68,10 +70,13 @@ export const ChatsPage = observer(({}) => {
 
 	function updateChatList() {
 		axios.post(serverLink("chats/list"), {
-			userToken: localStorage.getItem("token"),
+		userToken: localStorage.getItem("token"),
 		})
 		.then((r) => {
 			myRootStore.chatsStore.setChats(r.data);
+			r.data.forEach((chat:any) => {
+				socket.emit('joinChat', { chatId: chat.id });
+			});
 		});
 	};
 

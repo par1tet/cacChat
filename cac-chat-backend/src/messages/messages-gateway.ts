@@ -1,8 +1,8 @@
 import {
-  MessageBody,
-  SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer,
+    MessageBody,
+    SubscribeMessage,
+    WebSocketGateway,
+    WebSocketServer,
 } from '@nestjs/websockets';
 
 import { Socket, Server } from 'socket.io';
@@ -20,13 +20,22 @@ export class MessageGateway {
 
     @WebSocketServer() server: Server;
 
+    @SubscribeMessage('joinChat')
+    handleJoinChat(client: Socket, payload: { chatId: number }) {
+        const chatRoom = `chat_${payload.chatId}`;
+        client.join(chatRoom);
+    }
+
+    sendMessageToChat(chatId: number, message: any) {
+        const chatRoom = `chat_${chatId}`;
+        console.log(chatRoom)
+        this.server.to(chatRoom).emit('newMessage', { message });
+    }
+
     @SubscribeMessage('sendMessage')
     async handleNewMessage(client: Socket, dto: CreateMessageDto) {
         const message = await this.MessageService.createMessage(dto);
-
-            client.broadcast.emit('gettingMessage', {
-                message: message,
-            });
+        this.sendMessageToChat(dto.chatId, message)
     }
 
     // @SubscribeMessage('deleteMessage')
