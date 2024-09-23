@@ -25,23 +25,29 @@ export class ChatGateway {
         return chats;
     }
 
-    @SubscribeMessage('createChat')
-    async handleNewChat(client: Socket, dto: CreateChatDto) {
-        const chat = await this.ChatService.createChat(dto);
-        this.server.emit('userIn', chat);
-        return chat;
+    @ApiOperation({summary: "Создание лс"})
+    @SubscribeMessage('searchChatPrivate')
+    async handleCreatePM(client: Socket, dto: SearchPrivateUserChatDto) {
+        // Nothing
     }
 
-    @SubscribeMessage('deleteChat')
-    async handleDeleteChat(client: Socket, dto: DeleteChatDto) {
-        await this.ChatService.deleteChat(dto);
-        this.server.emit('delete', 'delete');
-    }
+    // @SubscribeMessage('createChat')
+    // async handleNewChat(client: Socket, dto: CreateChatDto) {
+    //     const chat = await this.ChatService.createChat(dto);
+    //     this.server.emit('userIn', chat);
+    //     return chat;
+    // }
 
-    @SubscribeMessage('addUserToChat')
-    async handleAddUserToChat(client: Socket, dto: AddUserToChatDto) {
-        const invite = await this.ChatService.addUserToChat(dto);
-        console.log(invite.dataValues.id);
-        this.server.emit('user', dto.userId);
-    }
+    // @SubscribeMessage('deleteChat')
+    // async handleDeleteChat(client: Socket, dto: DeleteChatDto) {
+    //     await this.ChatService.deleteChat(dto);
+    //     this.server.emit('delete', 'delete');
+    // }
+
+    // @SubscribeMessage('addUserToChat')
+    // async handleAddUserToChat(client: Socket, dto: AddUserToChatDto) {
+    //     const invite = await this.ChatService.addUserToChat(dto);
+    //     console.log(invite.dataValues.id);
+    //     this.server.emit('user', dto.userId);
+    // }
 }

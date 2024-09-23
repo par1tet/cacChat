@@ -2,15 +2,13 @@ import cl from './ChatsBlock.module.css'
 import { rootStore } from '../../../shared/store/rootStore'
 import vite from "/vite.svg";
 import clsx from 'clsx';
-import { chat } from '../../../shared/types/chats';
 import { observer } from 'mobx-react-lite';
 
 type propsChatsBlock = {
     store: rootStore,
-    handleChangeChat: ((e:any)=>void) | ((e:any) => Promise<void>)
 }
 
-export const ChatsBlock = observer(({store, handleChangeChat}: propsChatsBlock) => {
+export const ChatsBlock = observer(({store}: propsChatsBlock) => {
     return (<>
         <div className={cl["chatscontent__chats-list"]}>
             {store.chatsStore.chats.map(chat =>
@@ -27,7 +25,7 @@ export const ChatsBlock = observer(({store, handleChangeChat}: propsChatsBlock) 
                     ]
                     )}
                     data-chat-id={chat.id}
-                    onClick={handleChangeChat}
+                    onClick={e => store.chatsStore.setCurrentChat(+(e.currentTarget.attributes as any)["data-chat-id"].value)}
                 >
                     <img src={vite} />
                     <div className={cl["infocolumn"]}>
