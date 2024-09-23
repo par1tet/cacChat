@@ -96,34 +96,14 @@ export const ChatsPage = observer(({}: Props) => {
 
 	// HANDLER FUNCTIONS
 
-	const handleSearchChat = async (e: any) => {
+	const handleCreatePM = async (user: userData) => {
 		/*
-			Функция которая ищет чат
+			Функция которая создает лс
 		*/
-		let arr: any[] = [];
+		setIsSearch(false)
+		setSearchList([])
 
-		if (myUserData.id != e.id) {
-			await socket.emit("searchChatPrivate",[myUserData.id, e.id], (r: any) => {
-					arr = r;
 
-					if (arr.length == 0) {
-						socket.emit("createChat",{
-							title: e.nickname,
-							userToken: localStorage.getItem("token"),
-						}, async (r: any) => {
-							updateChatList();
-								socket.emit("addUserToChat", {
-									userId: e.id,
-									chatId: r.id,
-								});
-							}
-						);
-					}else{
-						myRootStore.chatsStore.setCurrentChat(r[0].id);
-					}
-				}
-			);
-		}
 	};
 
 	function handleClickToggleModal(e: any) {
@@ -145,8 +125,20 @@ export const ChatsPage = observer(({}: Props) => {
 		}
 	}
 
-	function handleChangeChat(e: any) {
-		myRootStore.chatsStore.setCurrentChat(+e.currentTarget.attributes["data-chat-id"].value);
+	function handleSearchFocus(e: any){
+		setIsSearch(true)
+
+		if(e.target.value === ''){
+			return setSearchList([])
+		}
+
+		axios.post(serverLink("users/search_user"), {
+			nickname: e.target.value,
+			userId: myUserData.id,
+		})
+		.then((r) => {
+			setSearchList(r.data);
+		});
 	}
 
 	const handleSearchEnter = async (e: any) => {
@@ -154,6 +146,7 @@ export const ChatsPage = observer(({}: Props) => {
 		setIsSearch(true)
 
 		if(e.target.value === ''){
+			console.log('sdf')
 			return setSearchList([])
 		}
 
@@ -171,45 +164,35 @@ export const ChatsPage = observer(({}: Props) => {
 		setIsSearch(false)
 	};
 
-	function handleSearchFocus(e: any){
-		setIsSearch(true)
-
-		if(e.target.value === ''){
-			return setSearchList([])
-		}
-
-		axios.post(serverLink("users/search_user"), {
-			nickname: e.target.value,
-			userId: myUserData.id,
-		})
-		.then((r) => {
-			setSearchList(r.data);
-		});
-	}
-
-	function handleClick(e: any) {
+	function handleOpenSideBar(e: any) {
 		if (!sideBarRef.current) return undefined;
 		sideBarRef.current.style.transform = "matrix(1, 0, 0, 1, 0, 0)";
+	}
+	
+	function handleChangeChat(e: any) {
+		myRootStore.chatsStore.setCurrentChat(+e.currentTarget.attributes["data-chat-id"].value);
 	}
 
 	return (
 		<>
 			<div className={cl["chatscontent"]}>
-				<div className={cl["chatscontent__chats"]} onBlur={handleSearchBlur} onFocus={handleSearchFocus}>
+				<div className={cl["chatscontent__chats"]}>
 					<div className={cl["chatscontent__chats-manage"]}>
-						<button onClick={handleClick}>
+						<button onClick={handleOpenSideBar}>
 							<img src={fiolBurger} alt="burger" draggable={false} />
 						</button>
 						<input
 							type="text"
 							className={cl["chatscontent__chat-search"]}
 							onChange={handleSearchEnter}
+							onBlur={handleSearchBlur}
+							onFocus={handleSearchFocus}
 						/>
 					</div>
 					{searchList.length !== 0 || isSearch ? (
 						<SearchBlock
 							searchList={searchList}
-							handleSearchChat={handleSearchChat}
+							handleCreatePM={handleCreatePM}
 						/>
 					) : (
 						<ChatsBlock

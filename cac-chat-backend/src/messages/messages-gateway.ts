@@ -29,9 +29,9 @@ export class MessageGateway {
             });
     }
 
-    @SubscribeMessage('deleteMessage')
-    async handleDeleteMessage(client: Socket, dto: DeleteMessageDto) {
-        await this.MessageService.deleteMessage(dto);
-        this.server.emit('' + dto.chatId, dto);
-    }
+    // @SubscribeMessage('deleteMessage')
+    // async handleDeleteMessage(client: Socket, dto: DeleteMessageDto) {
+    //     await this.MessageService.deleteMessage(dto);
+    //     this.server.emit('' + dto.chatId, dto);
+    // }
 }
