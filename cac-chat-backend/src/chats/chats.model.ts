@@ -6,6 +6,7 @@ import { Message } from "src/messages/messages.model";
 interface ChatCreateAttrs {
     title: string,
     userId: number,
+    type: string
 }
 
 @Table({tableName: 'chats'})
@@ -18,6 +19,9 @@ export class Chat extends Model<Chat, ChatCreateAttrs> {
     
     @Column({type: DataType.INTEGER, allowNull: false})
     userId: number
+
+    @Column({type: DataType.STRING, allowNull: false})
+    type: string
 
     @BelongsToMany(() => User, () => UserChat)
     users: User[];

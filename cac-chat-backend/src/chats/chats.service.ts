@@ -13,6 +13,7 @@ import { Message } from 'src/messages/messages.model';
 import { Sequelize } from 'sequelize-typescript';
 import { Op } from 'sequelize';
 import { SearchPrivateUserChatDto } from './dto/searchPrivateUserChat.dto';
+import { CreatePrivateUserChatDto } from './dto/createPrivateUserChat.dto';
 
 @Injectable()
 export class ChatsService {
@@ -45,6 +46,44 @@ export class ChatsService {
                 title: dto.title,
             });
             await this.addUserToChat({ userId, chatId: candidate.id });
+            return candidate;
+        } catch (error) {
+            console.error('Error creating chat:', error);
+            throw new HttpException(
+                'Could not create chat',
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+    }
+
+    async findCommonChats(userIds: CreatePrivateUserChatDto): Promise<number[]> {
+        if(userIds.users[0] == userIds.users[1]){
+            return [0]
+        }
+        const chats = await this.userChatRepository.findAll({
+            attributes: ['chatId'],
+            where: {
+                userId: userIds.users,
+            },
+            group: ['chatId'],
+            having: Sequelize.literal('COUNT(DISTINCT "userId") = 2'),
+        });
+
+        return chats.map(chat => chat.chatId);
+    }
+
+    async createPrivateChat(dto: CreatePrivateUserChatDto) {
+        try {
+            const userId = await this.getUserId(dto.userToken);
+            let candidate = await this.chatRepository.create({
+                title: "private-chat",
+                userId: userId,
+                type: "privateChat"
+            });
+            dto.users.forEach( async (element) => {
+                await this.addUserToChat({ userId: element, chatId: candidate.id });
+            });
+
             return candidate;
         } catch (error) {
             console.error('Error creating chat:', error);

@@ -29,7 +29,6 @@ export class MessagesService {
 	async createMessage(dto: CreateMessageDto){
 		try{
 			const user = await this.getUserId(dto.userToken)
-			console.log(dto)
 			const message = await this.messageRepository.create({...dto, userId: user})
 
 			return message
@@ -41,7 +40,6 @@ export class MessagesService {
 	async deleteMessage(dto: DeleteMessageDto){
 		try{
 			const user = await this.getUserId(dto.userToken)
-			console.log({...dto, userId: user})
 			const message = await this.messageRepository.destroy({where: {userId: user, id: dto.messageId}})
 			return "delete"
 		}catch(e){

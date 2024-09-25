@@ -20,13 +20,19 @@ export class MessageGateway {
 
     @WebSocketServer() server: Server;
 
+    sendMessageToChat(chatId: number, message: any) {
+        const chatRoom = `chat_${chatId}`;
+        this.server.to(chatRoom).emit('newMessage', { message });
+    }
+
     @SubscribeMessage('message')
-    handleMessage(
+    async handleMessage(
         client: Socket,
-        payload: { chatId: string; content: string, userToken: string },
-    ): void {
-        console.log(payload);
-        this.server.to(payload.chatId).emit('message', payload.content);
+        dto: CreateMessageDto,
+    ): Promise<void> {
+        const message = await this.MessageService.createMessage(dto);
+        const chatRoom = `chat_${dto.chatId}`;
+        this.server.to(chatRoom).emit('message', message);
     }
 
     // @SubscribeMessage('deleteMessage')

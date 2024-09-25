@@ -6,9 +6,10 @@ import {
 import { ChatsService } from './chats.service';
 
 import { Socket, Server } from 'socket.io';
-import { SearchPrivateUserChatDto } from './dto/searchPrivateUserChat.dto';
+import { CreatePrivateUserChatDto } from './dto/createPrivateUserChat.dto';
 import { ApiOperation } from '@nestjs/swagger';
 import { MessagesService } from '../messages/messages.service';
+import { CreateChatDto } from './dto/createChat.dto';
 
 @WebSocketGateway({ cors: true })
 export class ChatGateway {
@@ -20,16 +21,39 @@ export class ChatGateway {
         console.log('WebSocket Initialized');
     }
 
-    @SubscribeMessage('joinRoom')
-    handleJoinRoom(client: Socket, room: string): void {
-        client.join(room);
+    /* Подключение пользователя к комнате чата 
+    для последующего получения из него сообщений */
+
+    @SubscribeMessage('joinChat')
+    handleJoinChat(client: Socket, payload: { chatId: number }) {
+        const chatRoom = `chat_${payload.chatId}`;
+        client.join(chatRoom);
     }
 
-    @ApiOperation({ summary: 'Поиск чата' })
-    @SubscribeMessage('searchChatPrivate')
-    async handleSearchNewChat(client: Socket, dto: SearchPrivateUserChatDto) {
-        const chats = await this.ChatService.searchPrivateUserChat(dto);
-        return chats;
+    /* Подключение пользователя к комнате пользователя,
+    для последующего получения из него данных об обновление групп 
+    (удаление, добавление и тд.) */
+
+    @SubscribeMessage('connectUser')
+    handleConnectUser(client: Socket, payload: {userId: number}) {
+        const userRoom = `user_${payload.userId}`
+        client.join(userRoom)
+    }
+
+    @ApiOperation({summary: "Создание лс"})
+    @SubscribeMessage('createPrivateChat')
+    async handleCreatePM(client: Socket, dto: CreatePrivateUserChatDto) {
+        const candidate = await this.ChatService.findCommonChats(dto)
+        if(candidate.length > 0){
+            return candidate[0]
+        }
+        const chat = await this.ChatService.createPrivateChat(dto);
+        dto.users.forEach(element => {
+            const userRoom = `user_${element}`;
+            this.server.to(userRoom).emit('chatInvite', chat);
+        });
+        
+        return chat;
     }
     
     /*

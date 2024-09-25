@@ -6,7 +6,6 @@ import { AddUserToChatDto } from './dto/addUserToChat.dto';
 import { FindAllChatUsers } from './dto/findAllChatUsers.dto';
 import { FindAllUserChatsDto } from './dto/findAllUserChats.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { SearchPrivateUserChatDto } from './dto/searchPrivateUserChat.dto';
 
 @ApiTags('Chat')
 @Controller('chats')
