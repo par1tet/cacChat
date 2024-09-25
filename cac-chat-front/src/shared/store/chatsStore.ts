@@ -32,7 +32,6 @@ export class chatsStore {
         id?: number,
         createdAt?: string
     }, effect?: () => any) {
-        console.log(message)
         if(message.id === undefined){
             const candidate = this.chats.find(chat => chat.id === chatId)?.messages
             if(candidate) message.id = candidate.length
