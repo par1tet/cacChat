@@ -14,12 +14,21 @@ export class chatsStore {
         this.chats = newValue
     }
 
-    createChat(title: string){
-        this.chats.push({
-            "id": this.chats.length,
-            "title":title,
-            "messages": []
-        })
+    createChat(dto: chat, myNickname: string){
+        if(dto.type == "privateChat"){
+            console.log(myNickname)
+            let title = dto.title
+            if(dto.users.length == 2){
+                title = dto.users.filter((e) => {return e.nickname != myNickname})[0].nickname
+            }
+            this.chats.push({
+                "id": dto.id,
+                "title": title,
+                "messages": [],
+                "type": dto.type,
+                "users": dto.users
+            })
+        }
     }
 
     setCurrentChat(idChat: number) {

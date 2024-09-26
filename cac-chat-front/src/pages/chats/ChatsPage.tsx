@@ -14,6 +14,7 @@ import { SideBarChats } from './components/SideBarChats';
 import { SearchBlock } from './components/SearchBlock';
 import { ChatsBlock } from './components/ChatsBlock';
 import { ModalCreateChat } from './components/Modals/ModalCreateChat';
+import { chat } from '../../shared/types/chats';
 
 type userData = {
     email: string;
@@ -45,26 +46,36 @@ export const ChatsPage = observer(({}) => {
     }, [myRootStore.chatsStore.currentChat]);
 
     useEffect(() => {
+        console.log('useEffect вызван');
         if (!localStorage.getItem('token')) {
             navigate('/');
         } else {
             updateChatList();
-
+            
+            socket.emit('connectUser', { userId: myUserData.id });
+            
             myRootStore.chatsStore.chats.forEach((chat) => {
                 socket.emit('joinChat', { chatId: chat.id });
             });
         }
     }, []);
+    
 
     useEffect(() => {
-        socket.on('newMessage', (data: any) => {
-			console.log(data.message)
-            const chatId = data.message.chatId;
-            myRootStore.chatsStore.addMessageInChat(chatId, data.message);
+        socket.on('message', (data: any) => {
+            console.log(data)
+            const chatId = data.chatId;
+            myRootStore.chatsStore.addMessageInChat(chatId, data);
+        });
+        
+        socket.on('chatInvite', (data: any) => {
+            socket.emit('joinChat', { chatId: data.id});
+            myRootStore.chatsStore.createChat(data, myUserData.nickname)
         });
 
         return () => {
-            socket.off('newMessage');
+            socket.off('message');
+            socket.off('chatInvite');
         };
     }, [socket]);
 
@@ -76,8 +87,9 @@ export const ChatsPage = observer(({}) => {
                 userToken: localStorage.getItem('token'),
             })
             .then((r) => {
-                myRootStore.chatsStore.setChats(r.data);
-                r.data.forEach((chat: any) => {
+                console.log("connectData")
+                r.data.forEach((chat: chat) => {
+                    myRootStore.chatsStore.createChat(chat, myUserData.nickname);
                     socket.emit('joinChat', { chatId: chat.id });
                 });
             });
@@ -86,9 +98,18 @@ export const ChatsPage = observer(({}) => {
     // HANDLER FUNCTIONS
 
     const handleCreatePM = async (user: userData) => {
-        /*
-			Функция которая создает лс
-		*/
+        await socket.emit("createPrivateChat", {
+            userToken: localStorage.getItem('token'),
+            users: [user.id, myUserData.id]
+        }, (r:any) => {
+            if(typeof r == "number"){
+                myRootStore.chatsStore.setCurrentChat(r)
+            }
+            else{
+                console.log("create new chat")
+            }
+        });
+
         setIsSearch(false);
         setSearchList([]);
     };
@@ -147,8 +168,10 @@ export const ChatsPage = observer(({}) => {
     }
 
     function handleSearchBlur() {
-        setSearchList([]);
-        setIsSearch(false);
+        setTimeout(() => {
+            setSearchList([]);
+            setIsSearch(false);
+        }, 300)
     }
 
     function handleOpenSideBar(e: any) {
@@ -179,7 +202,7 @@ export const ChatsPage = observer(({}) => {
                     {searchList.length !== 0 || isSearch ? (
                         <SearchBlock
                             searchList={searchList}
-                            handleCreatePM={handleCreatePM}
+                            handleCreatePM={(user) => handleCreatePM(user)}
                         />
                     ) : (
                         <ChatsBlock store={myRootStore} />

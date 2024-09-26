@@ -56,6 +56,26 @@ export class ChatsService {
         }
     }
 
+    async selectChatUsersData(chatId: number) {
+        try {
+            const chat = await this.chatRepository.findOne({
+                where: { id: chatId },
+                include: [{
+                    model: User,
+                    attributes: ['id', 'nickname', 'email'],
+                    through: {
+                        attributes: []
+                    }
+                }]
+            });
+            
+            return chat ? chat.users : [];
+        } catch (e) {
+            console.error(e);
+            throw new HttpException('Не удалось получить данные пользователей', HttpStatus.BAD_REQUEST);
+        }
+    }
+
     async findCommonChats(userIds: CreatePrivateUserChatDto): Promise<number[]> {
         if(userIds.users[0] == userIds.users[1]){
             return [0]
@@ -75,16 +95,17 @@ export class ChatsService {
     async createPrivateChat(dto: CreatePrivateUserChatDto) {
         try {
             const userId = await this.getUserId(dto.userToken);
-            let candidate = await this.chatRepository.create({
+            const chat = await this.chatRepository.create({
                 title: "private-chat",
                 userId: userId,
                 type: "privateChat"
             });
-            dto.users.forEach( async (element) => {
-                await this.addUserToChat({ userId: element, chatId: candidate.id });
-            });
 
-            return candidate;
+            await Promise.all(dto.users.map(async (element) => {
+                await this.addUserToChat({ userId: element, chatId: chat.id });
+            }));
+
+            return chat;
         } catch (error) {
             console.error('Error creating chat:', error);
             throw new HttpException(
@@ -93,6 +114,7 @@ export class ChatsService {
             );
         }
     }
+    
 
     async deleteChat(dto: DeleteChatDto) {
         const userId = await this.getUserId(dto.userToken);
@@ -114,6 +136,7 @@ export class ChatsService {
             HttpStatus.BAD_REQUEST,
         );
     }
+    
 
     async findAllChatUsers(dto: FindAllChatUsers) {
         return await this.userChatRepository.findAll({
@@ -160,9 +183,9 @@ export class ChatsService {
     async findAllUserChats(dto: FindAllUserChatsDto) {
         try {
             const userId = await this.getUserId(dto.userToken);
-
+    
             const chats = await Chat.findAll({
-                attributes: ['id', 'title', 'createdAt'],
+                attributes: ['id', 'title', 'createdAt', 'type'],
                 include: [
                     {
                         model: Message,
@@ -173,11 +196,18 @@ export class ChatsService {
                     {
                         model: User,
                         as: 'users',
-                        where: { id: userId },
                         through: { attributes: [] },
                     },
                 ],
             });
+    
+            chats.forEach(chat => {
+                chat.users = chat.users.map(user => ({
+                    id: user.id,
+                    nickname: user.nickname,
+                })) as unknown as User[];
+            });
+    
             return chats;
         } catch (e) {
             console.log(e);
@@ -187,4 +217,5 @@ export class ChatsService {
             );
         }
     }
+    
 }

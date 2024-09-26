@@ -5,8 +5,16 @@ export type message = {
   userId: number;
 };
 
+export type ChatUser = {
+  email: string;
+  id: number;
+  nickname : string;
+}
+
 export type chat = {
   id: number;
   title: string;
   messages: message[];
+  type: string;
+  users: ChatUser[]
 };

@@ -52,7 +52,9 @@ export class ChatGateway {
             const userRoom = `user_${element}`;
             this.server.to(userRoom).emit('chatInvite', chat);
         });
-        
+
+        const userData = await this.ChatService.selectChatUsersData(chat.id)
+        chat.users = userData
         return chat;
     }
     

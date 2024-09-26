@@ -27,7 +27,7 @@ export const MessageList = observer(forwardRef(({store, userData}: propsMessageL
 				return undefined;
 			}
 
-			await socket.emit("sendMessage", {
+			await socket.emit("message", {
 				content: e.target.value.trim(),
 				userToken: localStorage.getItem("token"),
 				chatId: store.chatsStore.currentChat,
